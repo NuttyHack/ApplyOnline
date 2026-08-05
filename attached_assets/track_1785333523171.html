@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Application | Hoye Secondary School</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header-gradient {
+            background: linear-gradient(90deg, #1e293b, #3b82f6);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .btn-track {
+            background: #3b82f6;
+            border: none;
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        .status-box {
+            border-radius: 18px;
+            padding: 24px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        /* Modern Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        .step { z-index: 2; text-align: center; width: 30%; }
+        .step-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px;
+        }
+        .step.active .step-icon { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .step.completed .step-icon { background: #10b981; color: white; border-color: #10b981; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="glass-card shadow-lg border-0">
+                <div class="header-gradient">
+                    <i class="bi bi-shield-check fs-1"></i>
+                    <h2 class="fw-bold mt-2">Hoye Portal</h2>
+                    <p class="mb-0 opacity-75">Admission Tracking System</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div id="search-section">
+                        <label class="form-label fw-semibold text-secondary">Reference Number</label>
+                        <div class="input-group mb-4">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-hash"></i></span>
+                            <input type="text" id="trackInput" class="form-control border-start-0" placeholder="e.g. HY-2026-A1B2">
+                        </div>
+                        <button onclick="checkStatus()" id="btnText" class="btn btn-primary btn-track w-100 shadow-sm">
+                            Check My Status
+                        </button>
+                    </div>
+
+                    <div id="statusResult" style="display:none;">
+                        <div class="status-box text-center mb-4">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-1">Applicant</h6>
+                            <h4 id="applicantName" class="fw-bold mb-3 text-dark">...</h4>
+                            <hr class="my-3 opacity-10">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-2">Current Standing</h6>
+                            <span id="statusBadge" class="badge p-2 px-4 rounded-pill fs-6"></span>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="step completed" id="step1">
+                                <div class="step-icon"><i class="bi bi-file-earmark-check"></i></div>
+                                <small class="fw-medium">Applied</small>
+                            </div>
+                            <div class="step" id="step2">
+                                <div class="step-icon"><i class="bi bi-hourglass-split"></i></div>
+                                <small class="fw-medium">Review</small>
+                            </div>
+                            <div class="step" id="step3">
+                                <div class="step-icon"><i class="bi bi-check-circle"></i></div>
+                                <small class="fw-medium">Decision</small>
+                            </div>
+                        </div>
+
+                        <button onclick="location.reload()" class="btn btn-light btn-sm w-100 mt-5 border rounded-3 text-secondary">
+                            <i class="bi bi-arrow-left"></i> Track another number
+                        </button>
+                    </div>
+
+                    <div id="notFoundSection" style="display:none;" class="text-center">
+                        <div class="mb-4">
+                            <i class="bi bi-search-heart text-danger display-4"></i>
+                            <h4 class="mt-3 fw-bold">Not Found</h4>
+                            <p class="text-muted small">We couldn't find an application with that code.</p>
+                        </div>
+
+                        <div class="p-3 border-0 bg-light rounded-4 mb-4">
+                            <h6 class="fw-bold mb-1">Forgot your code?</h6>
+                            <p class="text-muted extra-small mb-3" style="font-size: 0.8rem;">Enter your ID and Phone to recover it.</p>
+                            <input type="text" id="recoverID" class="form-control mb-2 form-control-sm" placeholder="ID Number">
+                            <input type="text" id="recoverPhone" class="form-control mb-3 form-control-sm" placeholder="Phone Number">
+                            <button onclick="recoverReference()" id="btnRecover" class="btn btn-dark btn-sm w-100 rounded-3">Recover Reference</button>
+                        </div>
+
+                        <button onclick="location.reload()" class="btn btn-link btn-sm text-decoration-none">Try again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function checkStatus() {
+    const ref = document.getElementById('trackInput').value.trim();
+    const btn = document.getElementById('btnText');
+    
+    if(!ref) return alert("Please enter a tracking number");
+
+    btn.innerText = "Searching...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch("../app/track_status.php?ref=" + ref);
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            const data = result.data;
+            document.getElementById('search-section').style.display = 'none';
+            document.getElementById('statusResult').style.display = 'block';
+            
+            // Combine names safely from database record columns
+            document.getElementById('applicantName').innerText = data.first_name + " " + (data.last_name || "");
+            
+            const badge = document.getElementById('statusBadge');
+            const cleanStatus = data.status.toLowerCase().trim();
+            badge.innerText = cleanStatus.toUpperCase();
+
+            // Reset baseline timeline step properties
+            document.getElementById('step2').className = 'step';
+            document.getElementById('step3').className = 'step';
+
+            // DYNAMIC CONTRAST BADGE STYLE MAPPER ENGINE
+            if (cleanStatus === 'accepted') {
+                // Bold dark green text over soft emerald pill container
+                badge.className = 'badge p-2 px-4 rounded-pill fs-6';
+                badge.style.backgroundColor = '#dcfce7';
+                badge.style.color = '#166534';
+                
+                // Advance the timeline visual checks completely
+                document.getElementById('step2').className = 'step completed';
+                document.getElementById('step3').className = 'step completed';
+
+            } else if (cleanStatus === 'rejected') {
+                // Bold dark red text over soft candy crimson pill container
+                badge.className = 'badge p-2 px-4 rounded-pill fs-6';
+                badge.style.backgroundColor = '#fee2e2';
+                badge.style.color = '#991b1b';
+                
+                // Halt the status timeline flow gracefully
+                document.getElementById('step2').className = 'step active';
+
+            } else { 
+                // Default / PENDING State: Bold dark amber text over soft canary gold container
+                badge.className = 'badge p-2 px-4 rounded-pill fs-6';
+                badge.style.backgroundColor = '#fef9c3';
+                badge.style.color = '#854d0e';
+                
+                // Set timeline context state indicator to show Processing
+                document.getElementById('step2').className = 'step active';
+            }
+
+        } else {
+            // Display clean validation warning card view component
+            document.getElementById('search-section').style.display = 'none';
+            document.getElementById('notFoundSection').style.display = 'block';
+        }
+    } catch (err) {
+        alert("System connection error. Check if your server is running.");
+        btn.disabled = false;
+        btn.innerText = "Check My Status";
+    }
+}
+
+async function recoverReference() {
+    const id = document.getElementById('recoverID').value.trim();
+    const phone = document.getElementById('recoverPhone').value.trim(); 
+    const btn = document.getElementById('btnRecover');
+
+    if(!id || !phone) return alert("Please enter both ID and Mobile Number");
+
+    btn.innerText = "Finding...";
+    
+    try {
+        const response = await fetch(`../app/recover_ref.php?id=${id}&phone=${phone}`);
+        const result = await response.json();
+
+        if(result.status === 'success') {
+            alert("Found! Your Reference is: " + result.ref_number);
+            document.getElementById('trackInput').value = result.ref_number;
+            checkStatus(); 
+        } else {
+            alert("Application not found. Please check your details.");
+            btn.innerText = "Recover Reference";
+        }
+    } catch (e) {
+        alert("Recovery service error.");
+    }
+}
+</script>
+</body>
+</html>

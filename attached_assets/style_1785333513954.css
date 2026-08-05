@@ -1,0 +1,210 @@
+:root {
+    --hoye-blue: #002147;
+    --hoye-gold: #D4AF37;
+    --bg-light: #f8f9fa;
+    --text-main: #2d3436;
+    --white: #ffffff;
+    --input-border: #dfe6e9;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+.school-logo {
+    width: 80px;  /* Smaller size for a "Seal" look */
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #D4AF37;
+    background: white;
+    padding: 3px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 40px 20px;
+}
+
+#application-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.school-header {
+    background: var(--hoye-blue);
+    color: white;
+    padding: 50px 30px;
+    text-align: center;
+    border-bottom: 5px solid var(--hoye-gold);
+}
+
+.school-header h1 {
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* Professional Stepper Navigation */
+.stepper {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.step {
+    padding: 8px 20px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.step.active {
+    background: var(--hoye-gold);
+    color: var(--hoye-blue);
+}
+
+/* Form Section Alignment */
+.form-section {
+    padding: 50px;
+}
+
+h2 {
+    color: var(--hoye-blue);
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+}
+
+h2::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--input-border);
+    margin-left: 20px;
+}
+
+/* The Professional Grid */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 Columns by default */
+    gap: 25px;
+}
+
+/* Full width for specific fields like Address */
+.full-width {
+    grid-column: span 2;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #636e72;
+}
+
+input, select, textarea {
+    padding: 14px 18px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: #fdfdfd;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--hoye-blue);
+    box-shadow: 0 0 0 4px rgba(0, 33, 71, 0.05);
+    background: white;
+}
+
+/* Custom Styled Check/Radio Group */
+.check-group {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--input-border);
+}
+
+/* Navigation Buttons */
+.form-navigation {
+    padding: 30px 50px;
+    background: #fafafa;
+    border-top: 1px solid var(--input-border);
+    display: flex;
+    justify-content: space-between;
+}
+
+button {
+    padding: 14px 35px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#nextBtn {
+    background: var(--hoye-blue);
+    color: white;
+    border: none;
+}
+
+#nextBtn:hover {
+    background: #003366;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 33, 71, 0.2);
+}
+
+#prevBtn {
+    background: transparent;
+    color: var(--hoye-blue);
+    border: 2px solid var(--hoye-blue);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .input-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
+    .form-section { padding: 25px; }
+}
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+    transition: width 0.4s ease;
+    border-radius: 20px;
+}
+/* Highlights the input container in soft red warnings */
+.field.error input, 
+.field.error select {
+    border: 2px solid #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+/* Turns the label text dark red */
+.field.error label {
+    color: #b91c1c !important;
+}

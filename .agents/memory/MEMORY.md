@@ -1,0 +1,3 @@
+- [SKAVS AI Agent](skavs-agent.md) — rule-based chat widget; AI upgrade slot is explicit; no API key available so OpenAI integration was NOT set up.
+- [Yearbook page](yearbook-notes.md) — /yearbook route with YEARBOOK_DATA in src/data/subjects.ts; all subjects grades 8–12 with prerequisites, assessment breakdowns, career pathways.
+- [Apply page SKAVS props](apply-skavs-integration.md) — Apply.tsx accepts extractedData, initialStep, onExtractConsumed props from App.tsx shell for SKAVS autofill flow.

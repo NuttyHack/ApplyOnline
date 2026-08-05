@@ -1,0 +1,345 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'wouter';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Bot, Sparkles } from 'lucide-react';
+import { StepIndicator } from '@/components/StepIndicator';
+import { SuccessModal } from '@/components/SuccessModal';
+import { useSubmitApplication } from '@workspace/api-client-react';
+import type { ApplicationInput } from '@workspace/api-client-react';
+import { Step1LearnerInfo } from '@/components/steps/Step1LearnerInfo';
+import { Step2Academic } from '@/components/steps/Step2Academic';
+import { Step3Medical } from '@/components/steps/Step3Medical';
+import { Step4Guardian } from '@/components/steps/Step4Guardian';
+import { Step5Submit } from '@/components/steps/Step5Submit';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { ExtractedData } from '@/lib/document-parser';
+
+type ApplyProps = {
+  extractedData?: ExtractedData | null;
+  initialStep?: number | null;
+  onExtractConsumed?: () => void;
+};
+
+const steps = [
+  { number: 1, title: 'Learner Information' },
+  { number: 2, title: 'Academic Details' },
+  { number: 3, title: 'Medical & Support' },
+  { number: 4, title: 'Parent/Guardian' },
+  { number: 5, title: 'Submit & Declaration' },
+];
+
+export default function Apply({ extractedData, initialStep, onExtractConsumed }: ApplyProps = {}) {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showSkavsNotice, setShowSkavsNotice] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{ refNumber: string; message: string } | null>(null);
+
+  const form = useForm<ApplicationInput>({
+    defaultValues: {
+      // Step 1 defaults
+      firstName: '',
+      lastName: '',
+      middleName: '',
+      preferredName: '',
+      idNumber: '',
+      birthCertNumber: '',
+      dob: '',
+      age: undefined,
+      gender: 'Male',
+      nationality: '',
+      citizenship: '',
+      countryOfBirth: '',
+      homeLanguage: '',
+      secondLanguage: '',
+      learningLanguage: '',
+      religion: '',
+      mobileNumber: '',
+      email: '',
+      residentialAddress: '',
+      city: '',
+      province: '',
+      postalCode: '',
+      country: '',
+      livesWith: '',
+      totalSiblings: undefined,
+      familyPosition: '',
+      siblingsAtSchool: '',
+      // Step 2 defaults
+      preferredStartYear: 2027,
+      gradePassed: '',
+      yearPassedHighest: undefined,
+      currentGrade: '',
+      currentAcademicYear: undefined,
+      prevSchoolName: '',
+      prevSchoolAddress: '',
+      prevSchoolPhone: '',
+      reasonLeaving: '',
+      averagePercentage: '',
+      bestSubject: '',
+      weakestSubject: '',
+      numSubjectsPassed: undefined,
+      gradeApplying: '',
+      chosenStream: '',
+      optionalSubject: '',
+      needsSupport: '',
+      needsExtraLessons: '',
+      achievements: '',
+      sportsParticipation: '',
+      leadershipRoles: '',
+      extracurricular: '',
+      hasDisciplineHistory: '',
+      disciplineDetails: '',
+      motivationToJoin: '',
+      referralSource: '',
+      hasTeacherRelative: '',
+      teacherName: '',
+      teacherSurname: '',
+      teacherPhone: '',
+      teacherRelationship: '',
+      // Step 3 defaults
+      hasMedicalAid: '',
+      medAidProvider: '',
+      medAidNumber: '',
+      hasFamilyDoctor: '',
+      doctorName: '',
+      doctorPhone: '',
+      emergencyName: '',
+      emergencyPhone: '',
+      emergencyRelationship: '',
+      medicalAllergies: '',
+      medicalConditions: '',
+      currentMedication: '',
+      medAsthma: '',
+      medEpilepsy: '',
+      medDiabetes: '',
+      hasDisability: '',
+      disabilityDetails: '',
+      needsCounselling: '',
+      sportsAllowed: '',
+      allowEmergencyTreatment: '',
+      // Step 4 defaults
+      guardianFirstName: '',
+      guardianLastName: '',
+      guardianId: '',
+      guardianRelationship: '',
+      guardianMaritalStatus: '',
+      guardianPhone: '',
+      guardianAltPhone: '',
+      guardianWhatsapp: '',
+      guardianEmail: '',
+      guardianEmploymentStatus: '',
+      guardianOccupation: '',
+      guardianEmployer: '',
+      guardianIncomeRange: '',
+      guardianHomeAddress: '',
+      preferredCommunication: '',
+      hasSecondGuardian: '',
+      guardian2Name: '',
+      guardian2Phone: '',
+      permissionPhotos: '',
+      // Step 5 defaults
+      confirmTruth: '',
+      agreePolicies: '',
+      digitalSignature: '',
+      submissionDate: new Date().toISOString().split('T')[0],
+      additionalNotes: '',
+    },
+  });
+
+  // Apply SKAVS extracted data into the form when provided
+  useEffect(() => {
+    if (!extractedData) return;
+    const fieldMap: Partial<Record<keyof ApplicationInput, string | undefined>> = {
+      firstName: extractedData.firstName,
+      lastName: extractedData.lastName,
+      middleName: extractedData.middleName,
+      idNumber: extractedData.idNumber,
+      dob: extractedData.dob,
+      gender: extractedData.gender as string | undefined,
+      nationality: extractedData.nationality,
+      citizenship: extractedData.citizenship,
+      mobileNumber: extractedData.mobileNumber,
+      email: extractedData.email,
+      province: extractedData.province,
+      postalCode: extractedData.postalCode,
+      prevSchoolName: extractedData.prevSchoolName,
+      gradePassed: extractedData.gradePassed,
+      averagePercentage: extractedData.averagePercentage,
+    };
+    (Object.entries(fieldMap) as [keyof ApplicationInput, string | undefined][]).forEach(([k, v]) => {
+      if (v !== undefined) form.setValue(k, v as never, { shouldDirty: true });
+    });
+    if (initialStep) setCurrentStep(initialStep);
+    setShowSkavsNotice(true);
+    onExtractConsumed?.();
+  }, [extractedData]);
+
+  const submitMutation = useSubmitApplication();
+
+  const handleNext = async () => {
+    // Validate current step before advancing
+    let fieldsToValidate: (keyof ApplicationInput)[] = [];
+    
+    if (currentStep === 1) {
+      fieldsToValidate = ['firstName', 'lastName', 'idNumber', 'dob', 'gender', 'nationality', 'homeLanguage', 'residentialAddress', 'city', 'province', 'country'];
+    } else if (currentStep === 2) {
+      fieldsToValidate = ['prevSchoolName', 'gradeApplying', 'motivationToJoin', 'referralSource'];
+    } else if (currentStep === 3) {
+      fieldsToValidate = ['emergencyName', 'emergencyPhone'];
+    } else if (currentStep === 4) {
+      fieldsToValidate = ['guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship', 'guardianPhone'];
+    } else if (currentStep === 5) {
+      fieldsToValidate = ['confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate'];
+    }
+
+    const isValid = await form.trigger(fieldsToValidate);
+    
+    if (isValid) {
+      if (currentStep < 5) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      // Scroll to first error
+      const firstError = Object.keys(form.formState.errors)[0];
+      const element = document.querySelector(`[name="${firstError}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const onSubmit = (data: ApplicationInput) => {
+    submitMutation.mutate(
+      { data },
+      {
+        onSuccess: (result) => {
+          setSubmissionResult(result);
+          setShowSuccess(true);
+        },
+      }
+    );
+  };
+
+  return (
+    <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
+      {/* Header */}
+      <header className="border-b bg-card/80 backdrop-blur-sm">
+        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-accent font-bold text-lg">H</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Hoye Secondary School</h1>
+              <p className="text-xs text-muted-foreground">Online Admissions Application</p>
+            </div>
+          </div>
+          <Link href="/">
+            <Button variant="outline" size="sm" data-testid="button-back-home">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* SKAVS autofill notice */}
+      <AnimatePresence>
+        {showSkavsNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="bg-yellow-50 border-b border-yellow-200 px-4 py-2.5"
+          >
+            <div className="container max-w-6xl mx-auto flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm text-yellow-800">
+                <Sparkles className="w-4 h-4 text-yellow-600 shrink-0" />
+                <span><strong>SKAVS</strong> has pre-filled some fields from your document. Please review and correct any details before submitting.</span>
+              </div>
+              <button onClick={() => setShowSkavsNotice(false)} className="text-yellow-600 hover:text-yellow-800 text-xs font-medium shrink-0">Dismiss</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Step Indicator */}
+      <StepIndicator steps={steps} currentStep={currentStep} />
+
+      {/* Form */}
+      <div className="container max-w-4xl mx-auto px-4 py-8">
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {currentStep === 1 && <Step1LearnerInfo form={form} />}
+              {currentStep === 2 && <Step2Academic form={form} />}
+              {currentStep === 3 && <Step3Medical form={form} />}
+              {currentStep === 4 && <Step4Guardian form={form} />}
+              {currentStep === 5 && <Step5Submit form={form} />}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation */}
+          <div className="flex justify-between mt-8 pb-12">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              data-testid="button-back"
+            >
+              Back
+            </Button>
+            
+            {currentStep < 5 ? (
+              <Button type="button" onClick={handleNext} data-testid="button-next">
+                Next Step
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                disabled={submitMutation.isPending}
+                data-testid="button-submit-application"
+              >
+                {submitMutation.isPending ? 'Submitting...' : 'Submit Application'}
+              </Button>
+            )}
+          </div>
+
+          {/* Submission Error */}
+          {submitMutation.isError && (
+            <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+              Failed to submit application. Please check your information and try again.
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* Success Modal */}
+      {submissionResult && (
+        <SuccessModal
+          open={showSuccess}
+          onClose={() => setShowSuccess(false)}
+          refNumber={submissionResult.refNumber}
+          message={submissionResult.message}
+        />
+      )}
+    </div>
+  );
+}

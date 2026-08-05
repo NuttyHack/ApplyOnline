@@ -1,0 +1,423 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Hoye Secondary School Online Admissions API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: applications
+    description: Admissions application operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /applications:
+    post:
+      operationId: submitApplication
+      tags: [applications]
+      summary: Submit a new admission application
+      description: Submits a completed multi-step admission application and returns a tracking reference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationInput"
+      responses:
+        "201":
+          description: Application submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationSubmitResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /applications/track/{refNumber}:
+    get:
+      operationId: trackApplication
+      tags: [applications]
+      summary: Track application status by reference number
+      parameters:
+        - name: refNumber
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Application tracking reference number (e.g. HSS-2027-A1B2C3)
+      responses:
+        "200":
+          description: Application status found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationStatus"
+        "404":
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /applications/recover:
+    get:
+      operationId: recoverReference
+      tags: [applications]
+      summary: Recover a tracking reference using ID and phone number
+      parameters:
+        - name: idNumber
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Learner ID or passport number
+        - name: phone
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Parent/guardian phone number
+      responses:
+        "200":
+          description: Reference recovered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecoverResult"
+        "404":
+          description: Application not found with provided details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    ApplicationSubmitResult:
+      type: object
+      properties:
+        refNumber:
+          type: string
+          description: Tracking reference number assigned to this application
+        message:
+          type: string
+      required:
+        - refNumber
+        - message
+
+    ApplicationStatus:
+      type: object
+      properties:
+        refNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        gradeApplying:
+          type: string
+        status:
+          type: string
+          enum: [pending, under_review, accepted, rejected, waitlisted]
+        submittedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - refNumber
+        - firstName
+        - lastName
+        - gradeApplying
+        - status
+        - submittedAt
+        - updatedAt
+
+    RecoverResult:
+      type: object
+      properties:
+        refNumber:
+          type: string
+      required:
+        - refNumber
+
+    # --- Application input (all 5 steps) ---
+    ApplicationInput:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - idNumber
+        - dob
+        - gender
+        - nationality
+        - homeLanguage
+        - residentialAddress
+        - city
+        - province
+        - country
+        - gradeApplying
+        - prevSchoolName
+        - motivationToJoin
+        - referralSource
+        - emergencyName
+        - emergencyPhone
+        - guardianFirstName
+        - guardianLastName
+        - guardianId
+        - guardianRelationship
+        - guardianPhone
+        - confirmTruth
+        - agreePolicies
+        - digitalSignature
+        - submissionDate
+      properties:
+        # Step 1: Learner
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: ["string", "null"]
+        preferredName:
+          type: ["string", "null"]
+        idNumber:
+          type: string
+        birthCertNumber:
+          type: ["string", "null"]
+        dob:
+          type: string
+          format: date
+        age:
+          type: ["number", "null"]
+        gender:
+          type: string
+          enum: [Male, Female]
+        nationality:
+          type: string
+        citizenship:
+          type: ["string", "null"]
+        countryOfBirth:
+          type: ["string", "null"]
+        homeLanguage:
+          type: string
+        secondLanguage:
+          type: ["string", "null"]
+        learningLanguage:
+          type: ["string", "null"]
+        religion:
+          type: ["string", "null"]
+        mobileNumber:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        residentialAddress:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        postalCode:
+          type: ["string", "null"]
+        country:
+          type: string
+        livesWith:
+          type: ["string", "null"]
+        totalSiblings:
+          type: ["number", "null"]
+        familyPosition:
+          type: ["string", "null"]
+        siblingsAtSchool:
+          type: ["string", "null"]
+        # Step 2: Academic
+        preferredStartYear:
+          type: ["number", "null"]
+        gradePassed:
+          type: ["string", "null"]
+        yearPassedHighest:
+          type: ["number", "null"]
+        currentGrade:
+          type: ["string", "null"]
+        currentAcademicYear:
+          type: ["number", "null"]
+        prevSchoolName:
+          type: string
+        prevSchoolAddress:
+          type: ["string", "null"]
+        prevSchoolPhone:
+          type: ["string", "null"]
+        reasonLeaving:
+          type: ["string", "null"]
+        averagePercentage:
+          type: ["string", "null"]
+        bestSubject:
+          type: ["string", "null"]
+        weakestSubject:
+          type: ["string", "null"]
+        numSubjectsPassed:
+          type: ["number", "null"]
+        gradeApplying:
+          type: string
+        chosenStream:
+          type: ["string", "null"]
+        optionalSubject:
+          type: ["string", "null"]
+        needsSupport:
+          type: ["string", "null"]
+        needsExtraLessons:
+          type: ["string", "null"]
+        achievements:
+          type: ["string", "null"]
+        sportsParticipation:
+          type: ["string", "null"]
+        leadershipRoles:
+          type: ["string", "null"]
+        extracurricular:
+          type: ["string", "null"]
+        hasDisciplineHistory:
+          type: ["string", "null"]
+        disciplineDetails:
+          type: ["string", "null"]
+        motivationToJoin:
+          type: string
+        referralSource:
+          type: string
+        hasTeacherRelative:
+          type: ["string", "null"]
+        teacherName:
+          type: ["string", "null"]
+        teacherSurname:
+          type: ["string", "null"]
+        teacherPhone:
+          type: ["string", "null"]
+        teacherRelationship:
+          type: ["string", "null"]
+        # Step 3: Medical
+        hasMedicalAid:
+          type: ["string", "null"]
+        medAidProvider:
+          type: ["string", "null"]
+        medAidNumber:
+          type: ["string", "null"]
+        hasFamilyDoctor:
+          type: ["string", "null"]
+        doctorName:
+          type: ["string", "null"]
+        doctorPhone:
+          type: ["string", "null"]
+        emergencyName:
+          type: string
+        emergencyPhone:
+          type: string
+        emergencyRelationship:
+          type: ["string", "null"]
+        medicalAllergies:
+          type: ["string", "null"]
+        medicalConditions:
+          type: ["string", "null"]
+        currentMedication:
+          type: ["string", "null"]
+        medAsthma:
+          type: ["string", "null"]
+        medEpilepsy:
+          type: ["string", "null"]
+        medDiabetes:
+          type: ["string", "null"]
+        hasDisability:
+          type: ["string", "null"]
+        disabilityDetails:
+          type: ["string", "null"]
+        needsCounselling:
+          type: ["string", "null"]
+        sportsAllowed:
+          type: ["string", "null"]
+        allowEmergencyTreatment:
+          type: ["string", "null"]
+        # Step 4: Parent/Guardian
+        guardianFirstName:
+          type: string
+        guardianLastName:
+          type: string
+        guardianId:
+          type: string
+        guardianRelationship:
+          type: string
+        guardianMaritalStatus:
+          type: ["string", "null"]
+        guardianPhone:
+          type: string
+        guardianAltPhone:
+          type: ["string", "null"]
+        guardianWhatsapp:
+          type: ["string", "null"]
+        guardianEmail:
+          type: ["string", "null"]
+        guardianEmploymentStatus:
+          type: ["string", "null"]
+        guardianOccupation:
+          type: ["string", "null"]
+        guardianEmployer:
+          type: ["string", "null"]
+        guardianIncomeRange:
+          type: ["string", "null"]
+        guardianHomeAddress:
+          type: ["string", "null"]
+        preferredCommunication:
+          type: ["string", "null"]
+        hasSecondGuardian:
+          type: ["string", "null"]
+        guardian2Name:
+          type: ["string", "null"]
+        guardian2Phone:
+          type: ["string", "null"]
+        permissionPhotos:
+          type: ["string", "null"]
+        # Step 5: Declaration
+        confirmTruth:
+          type: string
+        agreePolicies:
+          type: string
+        digitalSignature:
+          type: string
+        submissionDate:
+          type: string
+          format: date
+        additionalNotes:
+          type: ["string", "null"]
