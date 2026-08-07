@@ -35,6 +35,10 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Hero Section */}
+      <section className="container max-w-4xl mx-auto px-4 py-16 text-center">
+        
+        
         <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4" data-testid="text-hero-title">
           Welcome to Hoye Secondary School
         </h2>
