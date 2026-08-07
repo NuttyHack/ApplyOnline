@@ -35,12 +35,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container max-w-4xl mx-auto px-4 py-16 text-center">
-        <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
-          <Award className="h-4 w-4 text-accent" />
-        </div>
-        
         <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4" data-testid="text-hero-title">
           Welcome to Hoye Secondary School
         </h2>
