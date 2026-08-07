@@ -39,7 +39,6 @@ export default function Home() {
       <section className="container max-w-4xl mx-auto px-4 py-16 text-center">
         <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6">
           <Award className="h-4 w-4 text-accent" />
-          <span className="text-sm font-medium text-accent">Now accepting applications for 2027 intake</span>
         </div>
         
         <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4" data-testid="text-hero-title">
@@ -129,7 +128,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t mt-16 py-8 bg-card">
         <div className="container max-w-6xl mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 Hoye Secondary School. All rights reserved.</p>
+          <p>&copy; 2026 Hoye Secondary School. All rights reserved.</p>
           <p className="mt-2">For assistance, please contact our admissions office.</p>
         </div>
       </footer>
