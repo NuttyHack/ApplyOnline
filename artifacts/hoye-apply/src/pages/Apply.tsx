@@ -218,7 +218,6 @@ const onSubmit = async (data: ApplicationInput) => {
 
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        // Handle File input from react-hook-form
         if (value instanceof FileList && value.length > 0) {
           formData.append(key, value[0]);
         } else if (value instanceof File) {
@@ -236,9 +235,9 @@ const onSubmit = async (data: ApplicationInput) => {
 
     const result = await response.json();
 
-    if (response.ok || result.status === "success" || result.success || result.refNumber) {
+    if (result.status === "success" || result.refNumber || response.ok) {
       setSubmissionResult({
-        refNumber: result.refNumber || result.ref_number || `HOYE-${Math.floor(100000 + Math.random() * 900000)}`,
+        refNumber: result.refNumber || result.tracking_number || `HY-${new Date().getFullYear()}-0000`,
         message: result.message || "Your application has been received successfully."
       });
       setShowSuccess(true);
