@@ -212,37 +212,44 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
-  const onSubmit = async (data: ApplicationInput) => {
-    try {
-      const formData = new FormData();
+const onSubmit = async (data: ApplicationInput) => {
+  try {
+    const formData = new FormData();
 
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          formData.append(key, value.toString());
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        // Handle File input from react-hook-form
+        if (value instanceof FileList && value.length > 0) {
+          formData.append(key, value[0]);
+        } else if (value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
         }
-      });
-
-      const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (response.ok || result.status === "success" || result.success || result.refNumber) {
-        setSubmissionResult({
-          refNumber: result.refNumber || result.ref_number || result.reference_number || `HOYE-${Math.floor(100000 + Math.random() * 900000)}`,
-          message: result.message || "Your application has been received successfully."
-        });
-        setShowSuccess(true);
-      } else {
-        alert("Submission failed: " + (result.message || "Please check your details."));
       }
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert("Unable to reach the server. Please try again.");
+    });
+
+    const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (response.ok || result.status === "success" || result.success || result.refNumber) {
+      setSubmissionResult({
+        refNumber: result.refNumber || result.ref_number || `HOYE-${Math.floor(100000 + Math.random() * 900000)}`,
+        message: result.message || "Your application has been received successfully."
+      });
+      setShowSuccess(true);
+    } else {
+      alert("Submission failed: " + (result.message || "Please check your details."));
     }
-  };
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Unable to reach the server. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
