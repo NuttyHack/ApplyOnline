@@ -1,11 +1,22 @@
- import { Link } from 'wouter';
+import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileText, Search, CheckCircle, Clock, User, Award, BookOpen } from 'lucide-react';
+import { 
+  FileText, 
+  Search, 
+  CheckCircle, 
+  Clock, 
+  User, 
+  BookOpen, 
+  ArrowRight, 
+  ShieldCheck, 
+  Sparkles 
+} from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
+      
       {/* Header */}
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -35,93 +46,82 @@ export default function Home() {
         </div>
       </header>
 
-      import Link from 'next/link'; // or 'react-router-dom'
-import { Button } from '@/components/ui/button';
-import { FileText, Search, ArrowRight, ShieldCheck, Clock, Sparkles } from 'lucide-react';
+      {/* Modern Hero Section */}
+      <section className="relative overflow-hidden py-16 md:py-24 bg-gradient-to-b from-background via-muted/30 to-background">
+        {/* Ambient background glow effect */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />
 
-export default function HeroSection() {
-  return (
-    <section className="relative overflow-hidden py-16 md:py-24 bg-gradient-to-b from-background via-muted/30 to-background">
-      {/* Ambient background glow effect */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />
-
-      <div className="container max-w-4xl mx-auto px-4 text-center relative z-10">
-        
-        {/* Modern Live Status Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-medium mb-6 backdrop-blur-md">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-          </span>
-          Official Admissions Portal • 2027 Academic Year Open
-        </div>
-
-        {/* Action-Focused Portal Title */}
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground mb-6 leading-[1.15]" data-testid="text-hero-title">
-          Online Admission Application for <br className="hidden sm:block" />
-          <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
-            Hoye Secondary School
-          </span>
-        </h1>
-
-        {/* Focused Subtitle */}
-        <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-          Submit learner details, upload required documents, and track your application status in real time—all through our secure digital portal.
-        </p>
-
-        {/* Modern High-Convert CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto">
+        <div className="container max-w-4xl mx-auto px-4 text-center relative z-10">
           
-          {/* Primary Action Button */}
-          <Link href="/apply" className="w-full sm:w-auto">
-            <Button 
-              size="lg" 
-              className="group relative w-full sm:w-auto h-13 px-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-blue-600/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-              data-testid="button-apply-online"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <FileText className="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-0.5" />
-                <span>Start New Application</span>
-                <ArrowRight className="h-4 w-4 ml-1 opacity-80 transition-transform duration-200 group-hover:translate-x-1" />
-              </span>
-            </Button>
-          </Link>
+          {/* Live Status Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-medium mb-6 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+            </span>
+            Official Admissions Portal • 2027 Academic Year Open
+          </div>
 
-          {/* Secondary Action Button */}
-          <Link href="/track" className="w-full sm:w-auto">
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="w-full sm:w-auto h-13 px-8 rounded-xl border-border/80 hover:border-slate-400 bg-background/80 hover:bg-accent/60 backdrop-blur-sm font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-              data-testid="button-track-application"
-            >
-              <Search className="h-5 w-5 mr-2 text-muted-foreground" />
-              <span>Track Existing Application</span>
-            </Button>
-          </Link>
+          {/* Action-Focused Title */}
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground mb-6 leading-[1.15]" data-testid="text-hero-title">
+            Online Admission Application for <br className="hidden sm:block" />
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+              Hoye Secondary School
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+            Submit learner details, upload required documents, and track your application status in real time—all through our secure digital portal.
+          </p>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto">
+            <Link href="/apply" className="w-full sm:w-auto">
+              <Button 
+                size="lg" 
+                className="group relative w-full sm:w-auto h-12 px-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-blue-600/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                data-testid="button-apply-online"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <FileText className="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-0.5" />
+                  <span>Start New Application</span>
+                  <ArrowRight className="h-4 w-4 ml-1 opacity-80 transition-transform duration-200 group-hover:translate-x-1" />
+                </span>
+              </Button>
+            </Link>
+
+            <Link href="/track" className="w-full sm:w-auto">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full sm:w-auto h-12 px-8 rounded-xl border-border/80 hover:border-slate-400 bg-background/80 hover:bg-accent/60 backdrop-blur-sm font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                data-testid="button-track-application"
+              >
+                <Search className="h-5 w-5 mr-2 text-muted-foreground" />
+                <span>Track Existing Application</span>
+              </Button>
+            </Link>
+          </div>
+
+          {/* Feature Highlights */}
+          <div className="mt-14 pt-8 border-t border-border/50 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs sm:text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-2">
+              <Clock className="w-4 h-4 text-blue-600" />
+              <span>Takes less than 10 minutes</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Encrypted & POPIA Compliant</span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="w-4 h-4 text-violet-600" />
+              <span>Instant Email & SMS Reference</span>
+            </div>
+          </div>
 
         </div>
-
-        {/* Portal Feature Highlights */}
-        <div className="mt-14 pt-8 border-t border-border/50 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs sm:text-sm text-muted-foreground">
-          <div className="flex items-center justify-center gap-2">
-            <Clock className="w-4 h-4 text-blue-600" />
-            <span>Takes less than 10 minutes</span>
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Encrypted & POPIA Compliant</span>
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4 text-violet-600" />
-            <span>Instant Email & SMS Reference</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-  );
-}
+      </section>
 
       {/* Application Steps */}
       <section className="container max-w-5xl mx-auto px-4 py-12">
