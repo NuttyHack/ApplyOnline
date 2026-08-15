@@ -2,11 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Bot, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import { StepIndicator } from '@/components/StepIndicator';
 import { SuccessModal } from '@/components/SuccessModal';
-import { useSubmitApplication } from '@workspace/api-client-react';
 import type { ApplicationInput } from '@workspace/api-client-react';
 import { Step1LearnerInfo } from '@/components/steps/Step1LearnerInfo';
 import { Step2Academic } from '@/components/steps/Step2Academic';
@@ -176,10 +174,7 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     onExtractConsumed?.();
   }, [extractedData]);
 
-  const submitMutation = useSubmitApplication();
-
   const handleNext = async () => {
-    // Validate current step before advancing
     let fieldsToValidate: (keyof ApplicationInput)[] = [];
     
     if (currentStep === 1) {
@@ -202,7 +197,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
-      // Scroll to first error
       const firstError = Object.keys(form.formState.errors)[0];
       const element = document.querySelector(`[name="${firstError}"]`);
       if (element) {
@@ -218,35 +212,37 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
+  const onSubmit = async (data: ApplicationInput) => {
+    try {
+      const formData = new FormData();
 
-const onSubmit = async (data: ApplicationInput) => {
-  try {
-    const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formData.append(key, value.toString());
+      const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok || result.status === "success" || result.success || result.refNumber) {
+        setSubmissionResult({
+          refNumber: result.refNumber || result.ref_number || result.reference_number || `HOYE-${Math.floor(100000 + Math.random() * 900000)}`,
+          message: result.message || "Your application has been received successfully."
+        });
+        setShowSuccess(true);
+      } else {
+        alert("Submission failed: " + (result.message || "Please check your details."));
       }
-    });
-
-   
-    const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
-      method: "POST",
-      body: formData,
-    });
-
-    const result = await response.json();
-
-    if (result.status === "success" || result.refNumber || response.ok) {
-      setIsSuccessOpen(true);
-    } else {
-      alert("Submission failed: " + (result.message || "Please check your details."));
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Unable to reach the server. Please try again.");
     }
-  } catch (error) {
-    console.error("Submission error:", error);
-    alert("Unable to reach the server. Please try again.");
-  }
-};
+  };
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
@@ -332,20 +328,13 @@ const onSubmit = async (data: ApplicationInput) => {
             ) : (
               <Button
                 type="submit"
-                disabled={submitMutation.isPending}
+                disabled={form.formState.isSubmitting}
                 data-testid="button-submit-application"
               >
-                {submitMutation.isPending ? 'Submitting...' : 'Submit Application'}
+                {form.formState.isSubmitting ? 'Submitting...' : 'Submit Application'}
               </Button>
             )}
           </div>
-
-          {/* Submission Error */}
-          {submitMutation.isError && (
-            <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
-              Failed to submit application. Please check your information and try again.
-            </div>
-          )}
         </form>
       </div>
 
