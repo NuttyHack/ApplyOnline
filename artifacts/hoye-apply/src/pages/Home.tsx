@@ -1,4 +1,4 @@
-import { Link } from 'wouter';
+ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText, Search, CheckCircle, Clock, User, Award, BookOpen } from 'lucide-react';

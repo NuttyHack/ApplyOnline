@@ -218,17 +218,35 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
-  const onSubmit = (data: ApplicationInput) => {
-    submitMutation.mutate(
-      { data },
-      {
-        onSuccess: (result) => {
-          setSubmissionResult(result);
-          setShowSuccess(true);
-        },
+
+const onSubmit = async (data: ApplicationInput) => {
+  try {
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
       }
-    );
-  };
+    });
+
+   
+    const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success" || result.refNumber || response.ok) {
+      setIsSuccessOpen(true);
+    } else {
+      alert("Submission failed: " + (result.message || "Please check your details."));
+    }
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Unable to reach the server. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
