@@ -234,12 +234,37 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     form.handleSubmit(onSubmit)(e);
   };
 
- const onSubmit = async (data: ApplicationInput) => {
+const onSubmit = async (data: ApplicationInput) => {
   if (currentStep !== 5) return;
 
   try {
     const formData = new FormData();
-    const allFields = { ...form.getValues(), ...data };
+    const allFields: Record<string, any> = { ...form.getValues(), ...data };
+
+    // Key lookup that ignores casing, spaces, and special characters
+    const getFieldValue = (targetKey: string, fieldsObj: Record<string, any>) => {
+      if (fieldsObj[targetKey] !== undefined && fieldsObj[targetKey] !== null && fieldsObj[targetKey] !== '') {
+        return fieldsObj[targetKey];
+      }
+      const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+      for (const [actualKey, value] of Object.entries(fieldsObj)) {
+        const normActual = actualKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (normTarget === normActual && value !== undefined && value !== null && value !== '') {
+          return value;
+        }
+      }
+      return null;
+    };
+
+    // Helper to prevent processed fields from leaking into Section 6
+    const markKeyAsProcessed = (targetKey: string, fieldsObj: Record<string, any>, processedSet: Set<string>) => {
+      const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+      for (const actualKey of Object.keys(fieldsObj)) {
+        if (actualKey.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget) {
+          processedSet.add(actualKey);
+        }
+      }
+    };
 
     Object.entries(allFields).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
@@ -297,13 +322,13 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     doc.setDrawColor(226, 232, 240);
     doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
 
-    // Robust Header Field Fallbacks
-    const firstName = allFields.firstName || (allFields as any).first_name || '';
-    const lastName = allFields.lastName || (allFields as any).last_name || '';
-    const fullName = `${firstName} ${lastName}`.trim() || (allFields as any).applicantName || 'N/A';
-    const idNumber = allFields.idNumber || (allFields as any).id_number || (allFields as any).passportNumber || 'N/A';
-    const gradeApplying = allFields.gradeApplying || (allFields as any).grade || 'N/A';
-    const startYear = allFields.preferredStartYear || (allFields as any).start_year || '2027';
+    // Header field mapping with fallbacks
+    const firstName = cleanValue(getFieldValue('firstName', allFields));
+    const lastName = cleanValue(getFieldValue('lastName', allFields));
+    const fullName = `${firstName} ${lastName}`.trim() || cleanValue(getFieldValue('applicantName', allFields)) || 'N/A';
+    const idNumber = cleanValue(getFieldValue('idNumber', allFields) || getFieldValue('passportNumber', allFields)) || 'N/A';
+    const gradeApplying = cleanValue(getFieldValue('gradeApplying', allFields) || getFieldValue('grade', allFields)) || 'N/A';
+    const startYear = cleanValue(getFieldValue('preferredStartYear', allFields) || getFieldValue('startYear', allFields)) || '2027';
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
@@ -376,11 +401,12 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     let currentY = 60;
     const processedKeys = new Set<string>();
 
-    // Render defined sections (displays explicit N/A instead of dropping missing fields)
+    // Render defined sections using fuzzy key matching
     sections.forEach((sec) => {
       const rows = sec.keys.map((k) => {
-        processedKeys.add(k);
-        const val = cleanValue(allFields[k as keyof typeof allFields]);
+        markKeyAsProcessed(k, allFields, processedKeys);
+        const rawVal = getFieldValue(k, allFields);
+        const val = cleanValue(rawVal);
         return [formatLabel(k), val || 'N/A'] as [string, string];
       });
 
@@ -413,14 +439,14 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       currentY = (doc as any).lastAutoTable.finalY + 8;
     });
 
-    // Catch-all section: dynamic mapping for any custom input fields not listed above
+    // Catch-all section for extra fields not defined in standard sections
     const remainingKeys = Object.keys(allFields).filter(
       (k) => !processedKeys.has(k) && k !== 'pdf_form_path'
     );
 
     if (remainingKeys.length > 0) {
       const remainingRows = remainingKeys.map((k) => {
-        const val = cleanValue(allFields[k as keyof typeof allFields]);
+        const val = cleanValue(allFields[k]);
         return [formatLabel(k), val || 'N/A'] as [string, string];
       });
 
