@@ -530,7 +530,7 @@ export const YEARBOOK_DATA: Grade[] = [
     subjects: [
       {
         code: "ENG-10",
-        name: "English Home Language",
+        name: "English First Additional Language",
         category: "compulsory",
         description:
           "Advanced study of literature, language, and communication. Learners analyse novels, drama, and poetry while developing formal essay and report writing skills. A pass at 40% is required for NSC.",
@@ -562,10 +562,10 @@ export const YEARBOOK_DATA: Grade[] = [
       },
       {
         code: "ZUL-10",
-        name: "isiZulu First Additional Language",
+        name: "isiZulu Home Language",
         category: "compulsory",
         description:
-          "Develops advanced Zulu literacy through prescribed texts, formal essays, and oral performance. Required for the NSC with a minimum pass of 40%.",
+          "Develops advanced Zulu literacy through prescribed texts, formal essays, and oral performance. Required for the NSC with a minimum pass of 50%.",
         prerequisites: ["ZUL-9"],
         topics: [
           "Prescribed isiZulu novel",
@@ -792,35 +792,6 @@ export const YEARBOOK_DATA: Grade[] = [
         icon: "🗺️",
       },
       {
-        code: "ACC-10",
-        name: "Accounting",
-        category: "elective",
-        description:
-          "Teaches financial record-keeping, the accounting cycle, and financial statement analysis. Essential for commerce, finance, and business degrees. Requires strong Mathematics or Mathematical Literacy.",
-        prerequisites: ["EMS-9 — minimum 50%"],
-        topics: [
-          "Accounting equation",
-          "Journals & ledgers",
-          "Trial balance",
-          "Financial statements",
-          "Partnerships",
-          "Bank reconciliation",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA)", weight: 25 },
-          { component: "Final exam", weight: 75 },
-        ],
-        careers: [
-          "Chartered accountancy (CA)",
-          "Auditing",
-          "Financial management",
-          "Banking",
-          "Tax consulting",
-        ],
-        difficulty: "challenging",
-        icon: "📊",
-      },
-      {
         code: "BUS-10",
         name: "Business Studies",
         category: "elective",
@@ -849,157 +820,6 @@ export const YEARBOOK_DATA: Grade[] = [
         difficulty: "moderate",
         icon: "🏢",
       },
-      {
-        code: "ECON-10",
-        name: "Economics",
-        category: "elective",
-        description:
-          "Analyses how individuals, firms, and governments make decisions in a world of scarce resources. Covers microeconomics, macroeconomics, and the South African economy.",
-        prerequisites: ["EMS-9", "MATH-10 or MATLIT-10"],
-        topics: [
-          "Supply & demand",
-          "Market structures",
-          "National income",
-          "Monetary policy",
-          "International trade",
-          "Development economics",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA)", weight: 25 },
-          { component: "Paper 1 (micro & macro)", weight: 37.5 },
-          { component: "Paper 2 (applied economics)", weight: 37.5 },
-        ],
-        careers: [
-          "Economics",
-          "Banking",
-          "Finance",
-          "Government policy",
-          "Consulting",
-          "Academia",
-        ],
-        difficulty: "challenging",
-        icon: "📈",
-      },
-      {
-        code: "CAT-10",
-        name: "Computer Applications Technology (CAT)",
-        category: "elective",
-        description:
-          "Practical study of word processing, spreadsheets, databases, and internet use. Develops digital skills applicable across all career fields. Does not cover programming.",
-        prerequisites: ["Basic computer literacy"],
-        topics: [
-          "Microsoft Word (advanced)",
-          "Excel & spreadsheets",
-          "Access databases",
-          "Internet & e-communication",
-          "HTML basics",
-          "Digital citizenship",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA) — practical tasks", weight: 25 },
-          { component: "Practical exam", weight: 37.5 },
-          { component: "Theory exam", weight: 37.5 },
-        ],
-        careers: [
-          "Office administration",
-          "Data analysis",
-          "Project management",
-          "Business",
-          "Education",
-        ],
-        difficulty: "moderate",
-        icon: "💻",
-      },
-      {
-        code: "IT-10",
-        name: "Information Technology (IT)",
-        category: "elective",
-        description:
-          "Teaches programming (Delphi/Python), systems development, and network fundamentals. The gateway to software engineering and computer science degrees. Pairs well with Mathematics.",
-        prerequisites: ["MATH-10 recommended", "Basic computer literacy"],
-        topics: [
-          "Programming logic",
-          "Object-oriented programming",
-          "Algorithms & pseudocode",
-          "Database design (SQL)",
-          "Networking basics",
-          "System development",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA) — coding tasks", weight: 25 },
-          { component: "Practical exam (programming)", weight: 37.5 },
-          { component: "Theory exam", weight: 37.5 },
-        ],
-        careers: [
-          "Software engineering",
-          "Cybersecurity",
-          "Data science",
-          "AI & machine learning",
-          "Network engineering",
-        ],
-        difficulty: "challenging",
-        icon: "🖥️",
-      },
-      {
-        code: "VISART-10",
-        name: "Visual Arts",
-        category: "elective",
-        description:
-          "Studio-based exploration of drawing, painting, printmaking, photography, and digital art. Learners build a personal portfolio and engage with art history and criticism.",
-        prerequisites: ["ART-9 or demonstrated artistic ability"],
-        topics: [
-          "Drawing & composition",
-          "Painting techniques",
-          "Printmaking",
-          "Photography & digital art",
-          "Art history",
-          "Portfolio curation",
-        ],
-        assessment: [
-          { component: "Portfolio (SBA)", weight: 60 },
-          { component: "Theory exam", weight: 40 },
-        ],
-        careers: [
-          "Graphic design",
-          "Fine arts",
-          "Architecture",
-          "Advertising",
-          "Game design",
-          "Film production",
-        ],
-        difficulty: "moderate",
-        icon: "🎨",
-      },
-      {
-        code: "DRAM-10",
-        name: "Dramatic Arts",
-        category: "elective",
-        description:
-          "Develops performance, directing, and production skills. Learners study theatre traditions, create original performances, and analyse scripts. Builds confidence and public speaking.",
-        prerequisites: ["ART-9 or interest in performance"],
-        topics: [
-          "Acting techniques",
-          "Devised theatre",
-          "Script analysis",
-          "Directing basics",
-          "Technical theatre",
-          "World theatre traditions",
-        ],
-        assessment: [
-          { component: "Practical performance (SBA)", weight: 60 },
-          { component: "Theory exam", weight: 40 },
-        ],
-        careers: [
-          "Performing arts",
-          "Film & TV acting",
-          "Directing",
-          "Law (public speaking)",
-          "Education",
-          "Corporate training",
-        ],
-        difficulty: "moderate",
-        icon: "🎭",
-      },
     ],
   },
 
@@ -1011,7 +831,7 @@ export const YEARBOOK_DATA: Grade[] = [
     subjects: [
       {
         code: "ENG-11",
-        name: "English Home Language",
+        name: "English First Additional Language",
         category: "compulsory",
         description:
           "Builds on Grade 10 with more complex literary analysis, persuasive writing, and oral communication. Grade 11 results are submitted to universities for provisional acceptance.",
@@ -1035,11 +855,11 @@ export const YEARBOOK_DATA: Grade[] = [
       },
       {
         code: "ZUL-11",
-        name: "isiZulu First Additional Language",
+        name: "isiZulu Home Language",
         category: "compulsory",
         description:
           "Advanced Zulu communication with prescribed literary texts and formal writing tasks. Oral examinations are conducted under formal conditions.",
-        prerequisites: ["ZUL-10 — minimum 40%"],
+        prerequisites: ["ZUL-10 — minimum 50%"],
         topics: [
           "Prescribed isiZulu texts",
           "Formal essay writing",
@@ -1231,35 +1051,6 @@ export const YEARBOOK_DATA: Grade[] = [
         icon: "🗺️",
       },
       {
-        code: "ACC-11",
-        name: "Accounting",
-        category: "elective",
-        description:
-          "Advances to company accounting, cash flow statements, and financial analysis. Requires meticulous accuracy and logical thinking. One of the most demanding FET subjects.",
-        prerequisites: ["ACC-10 — minimum 50%"],
-        topics: [
-          "Company financial statements",
-          "Cash flow statements",
-          "Analysis & interpretation",
-          "Budgeting",
-          "Ethics in accounting",
-          "Inventory systems",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA)", weight: 25 },
-          { component: "Final exam", weight: 75 },
-        ],
-        careers: [
-          "Chartered accountancy (CA)",
-          "Auditing",
-          "Tax consulting",
-          "Financial management",
-          "Banking",
-        ],
-        difficulty: "challenging",
-        icon: "📊",
-      },
-      {
         code: "BUS-11",
         name: "Business Studies",
         category: "elective",
@@ -1288,66 +1079,6 @@ export const YEARBOOK_DATA: Grade[] = [
         difficulty: "moderate",
         icon: "🏢",
       },
-      {
-        code: "ECON-11",
-        name: "Economics",
-        category: "elective",
-        description:
-          "Macro and microeconomic theory, market failures, and economic policy analysis. Develops quantitative and analytical thinking essential for commerce degrees.",
-        prerequisites: ["ECON-10 — minimum 50%"],
-        topics: [
-          "Price elasticity",
-          "Market failure & government intervention",
-          "National accounts",
-          "Business cycle",
-          "Monetary & fiscal policy",
-          "International economics",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA)", weight: 25 },
-          { component: "Paper 1", weight: 37.5 },
-          { component: "Paper 2", weight: 37.5 },
-        ],
-        careers: [
-          "Economics",
-          "Finance",
-          "Government policy",
-          "Banking",
-          "Research",
-        ],
-        difficulty: "challenging",
-        icon: "📈",
-      },
-      {
-        code: "IT-11",
-        name: "Information Technology (IT)",
-        category: "elective",
-        description:
-          "Advanced programming, object-oriented design, database management, and networking. Learners build substantial software applications assessed via practical exams.",
-        prerequisites: ["IT-10 — minimum 50%", "MATH-10 or MATH-11"],
-        topics: [
-          "Advanced OOP (classes, inheritance)",
-          "File handling",
-          "SQL & relational databases",
-          "Networking & security",
-          "Social & ethical issues",
-          "Systems development lifecycle",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA) — project", weight: 25 },
-          { component: "Practical exam", weight: 37.5 },
-          { component: "Theory exam", weight: 37.5 },
-        ],
-        careers: [
-          "Software engineering",
-          "Cybersecurity",
-          "Data science",
-          "Cloud computing",
-          "AI & machine learning",
-        ],
-        difficulty: "challenging",
-        icon: "🖥️",
-      },
     ],
   },
 
@@ -1359,7 +1090,7 @@ export const YEARBOOK_DATA: Grade[] = [
     subjects: [
       {
         code: "ENG-12",
-        name: "English Home Language",
+        name: "English First Additional Language",
         category: "compulsory",
         description:
           "Matric English demands mastery of literary analysis, formal writing, and oral communication under strict examination conditions. Minimum 40% required for NSC; 50%+ required for university admission.",
@@ -1383,11 +1114,11 @@ export const YEARBOOK_DATA: Grade[] = [
       },
       {
         code: "ZUL-12",
-        name: "isiZulu First Additional Language",
+        name: "isiZulu Home Language",
         category: "compulsory",
         description:
           "Matric isiZulu culminates in formal oral and written examinations. A pass demonstrates South Africa's commitment to multilingual education and opens doors in government, NGOs, and education sectors.",
-        prerequisites: ["ZUL-11 — minimum 40%"],
+        prerequisites: ["ZUL-11 — minimum 50%"],
         topics: [
           "Prescribed isiZulu texts",
           "Formal oral examination",
@@ -1551,35 +1282,6 @@ export const YEARBOOK_DATA: Grade[] = [
         icon: "📜",
       },
       {
-        code: "ACC-12",
-        name: "Accounting",
-        category: "elective",
-        description:
-          "Company liquidation, manufacturing accounts, and internal controls are added to Grade 11 content. One of the most demanding NSC subjects — but a distinction is the clearest path to CA(SA).",
-        prerequisites: ["ACC-11 — minimum 40%"],
-        topics: [
-          "Company liquidation accounts",
-          "Manufacturing accounts",
-          "Internal controls & auditing",
-          "Ethics & corporate governance",
-          "Cash flow & projections",
-          "Financial analysis (ratios)",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA)", weight: 25 },
-          { component: "Final exam", weight: 75 },
-        ],
-        careers: [
-          "Chartered accountancy (CA(SA))",
-          "Auditing",
-          "Forensic accounting",
-          "Banking",
-          "Financial management",
-        ],
-        difficulty: "challenging",
-        icon: "📊",
-      },
-      {
         code: "BUS-12",
         name: "Business Studies",
         category: "elective",
@@ -1607,66 +1309,6 @@ export const YEARBOOK_DATA: Grade[] = [
         ],
         difficulty: "moderate",
         icon: "🏢",
-      },
-      {
-        code: "ECON-12",
-        name: "Economics",
-        category: "elective",
-        description:
-          "Global and South African economic challenges, environmental economics, and development policy analysis. Combines extended writing with quantitative data interpretation.",
-        prerequisites: ["ECON-11 — minimum 40%"],
-        topics: [
-          "Environmental & resource economics",
-          "South African economic challenges",
-          "Global economic development",
-          "Inequality & poverty analysis",
-          "Economic policy responses",
-          "Research & essay writing skills",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA)", weight: 25 },
-          { component: "Paper 1", weight: 37.5 },
-          { component: "Paper 2", weight: 37.5 },
-        ],
-        careers: [
-          "Economics",
-          "Finance",
-          "Development economics",
-          "Policy-making",
-          "Research & academia",
-        ],
-        difficulty: "challenging",
-        icon: "📈",
-      },
-      {
-        code: "IT-12",
-        name: "Information Technology (IT)",
-        category: "elective",
-        description:
-          "Capstone IT study: complex OOP applications, advanced SQL, system design, and professional ethics. Learners develop a substantial program for assessment. The clearest NSC path to Computer Science degrees.",
-        prerequisites: ["IT-11 — minimum 40%"],
-        topics: [
-          "Complex OOP applications",
-          "Advanced SQL & database design",
-          "Data structures (arrays, lists)",
-          "System development (full SDLC)",
-          "Network management",
-          "IT professionalism & ethics",
-        ],
-        assessment: [
-          { component: "School-Based Assessment (SBA) — large program", weight: 25 },
-          { component: "Practical exam", weight: 37.5 },
-          { component: "Theory exam", weight: 37.5 },
-        ],
-        careers: [
-          "Software engineering",
-          "Cybersecurity",
-          "Data science & AI",
-          "Cloud architecture",
-          "Systems analysis",
-        ],
-        difficulty: "challenging",
-        icon: "🖥️",
       },
       {
         code: "GEO-12",
