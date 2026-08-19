@@ -37,6 +37,7 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
   const [submissionResult, setSubmissionResult] = useState<{ refNumber: string; message: string } | null>(null);
 
   const form = useForm<ApplicationInput>({
+    shouldUnregister: false,
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -213,7 +214,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
-  // Guard 1: Intercept Enter keypresses on steps 1-4 to trigger next step rather than submission
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === 'Enter' && currentStep < 5 && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
       e.preventDefault();
@@ -222,7 +222,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
-  // Guard 2: Strict execution gatekeeper on form submit
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -236,7 +235,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
   };
 
   const onSubmit = async (data: ApplicationInput) => {
-    // Guard 3: Hard block on submission unless user is explicitly on Step 5
     if (currentStep !== 5) {
       return;
     }
@@ -274,7 +272,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         return String(val);
       };
 
-      // Modern PDF Generation
       const doc = new jsPDF();
       const primaryColor: [number, number, number] = [30, 58, 138];
       const secondaryColor: [number, number, number] = [71, 85, 105];
