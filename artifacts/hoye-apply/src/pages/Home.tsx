@@ -17,32 +17,59 @@ export default function Home() {
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
       
-      {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-accent font-bold text-lg">H</span>
+      {/* Modern Header with School Logo */}
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md shadow-xs transition-all">
+        <div className="container max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          
+          <Link href="/" className="flex items-center gap-3.5 group cursor-pointer">
+            <div className="w-11 h-11 rounded-2xl bg-muted/60 border border-border/60 p-1.5 flex items-center justify-center shadow-xs group-hover:border-primary/50 transition-colors">
+              <img 
+                src="/logo.png" 
+                alt="Hoye Secondary School Logo" 
+                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" 
+                onError={(e) => {
+                  // Graceful fallback if logo image hasn't been uploaded yet
+                  (e.target as HTMLElement).style.display = 'none';
+                  (e.target as HTMLElement).parentElement!.innerText = 'H';
+                }}
+              />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-foreground" data-testid="text-school-name">Hoye Secondary School</h1>
-              <p className="text-xs text-muted-foreground">Online Admissions Portal</p>
+              <h1 className="text-base font-extrabold tracking-tight text-foreground group-hover:text-primary transition-colors" data-testid="text-school-name">
+                Hoye Secondary School
+              </h1>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <p className="text-[11px] font-medium text-muted-foreground">Online Admissions Portal</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
+          </Link>
+
+          <div className="flex items-center gap-2.5">
             <Link href="/yearbook">
-              <Button variant="ghost" size="sm">
-                <BookOpen className="h-4 w-4 mr-2" />
-                Yearbook
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="rounded-xl h-9 px-3.5 text-xs font-semibold gap-2 hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+              >
+                <BookOpen className="h-4 w-4 text-primary" />
+                <span>Yearbook</span>
               </Button>
             </Link>
+            
             <Link href="/track">
-              <Button variant="outline" size="sm" data-testid="button-track-header">
-                <Search className="h-4 w-4 mr-2" />
-                Track Application
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-xl h-9 px-4 text-xs font-semibold gap-2 border-border/80 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-xs" 
+                data-testid="button-track-header"
+              >
+                <Search className="h-3.5 w-3.5" />
+                <span>Track Application</span>
               </Button>
             </Link>
           </div>
+
         </div>
       </header>
 
