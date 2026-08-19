@@ -234,211 +234,246 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     form.handleSubmit(onSubmit)(e);
   };
 
-  const onSubmit = async (data: ApplicationInput) => {
-    if (currentStep !== 5) {
-      return;
-    }
+ const onSubmit = async (data: ApplicationInput) => {
+  if (currentStep !== 5) return;
 
-    try {
-      const formData = new FormData();
-      const allFields = { ...form.getValues(), ...data };
+  try {
+    const formData = new FormData();
+    const allFields = { ...form.getValues(), ...data };
 
-      Object.entries(allFields).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          if (value instanceof FileList && value.length > 0) {
-            formData.append(key, value[0]);
-          } else if (value instanceof File) {
-            formData.append(key, value);
-          } else {
-            formData.append(key, String(value));
-          }
+    Object.entries(allFields).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        if (value instanceof FileList && value.length > 0) {
+          formData.append(key, value[0]);
+        } else if (value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+    });
+
+    const formatLabel = (key: string) =>
+      key
+        .replace(/_/g, ' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/^./, (str) => str.toUpperCase())
+        .trim();
+
+    const cleanValue = (val: any): string => {
+      if (val === null || val === undefined) return '';
+      if (typeof val === 'number' && Number.isNaN(val)) return '';
+      if (String(val) === 'NaN' || String(val).toLowerCase() === 'undefined') return '';
+      if (val instanceof File) return `[Attached File: ${val.name}]`;
+      if (val instanceof FileList && val.length > 0) return `[Attached File: ${val[0].name}]`;
+      if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+      return String(val).trim();
+    };
+
+    const doc = new jsPDF();
+    const primaryColor: [number, number, number] = [30, 58, 138];
+    const secondaryColor: [number, number, number] = [71, 85, 105];
+    const lightBg: [number, number, number] = [248, 250, 252];
+
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 28, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(15);
+    doc.setTextColor(255, 255, 255);
+    doc.text('HOYE SECONDARY SCHOOL', 14, 15);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(226, 232, 240);
+    doc.text('OFFICIAL ADMISSION APPLICATION RECORD', 14, 22);
+
+    const today = new Date().toLocaleDateString('en-ZA');
+    doc.setFontSize(8);
+    doc.text(`Submitted: ${today}`, 196, 15, { align: 'right' });
+    doc.text('Status: Pending Review', 196, 22, { align: 'right' });
+
+    doc.setFillColor(...lightBg);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
+
+    // Robust Header Field Fallbacks
+    const firstName = allFields.firstName || (allFields as any).first_name || '';
+    const lastName = allFields.lastName || (allFields as any).last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim() || (allFields as any).applicantName || 'N/A';
+    const idNumber = allFields.idNumber || (allFields as any).id_number || (allFields as any).passportNumber || 'N/A';
+    const gradeApplying = allFields.gradeApplying || (allFields as any).grade || 'N/A';
+    const startYear = allFields.preferredStartYear || (allFields as any).start_year || '2027';
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...primaryColor);
+    doc.text(`Applicant Name: ${fullName}`, 18, 41);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(...secondaryColor);
+    doc.text(`ID / Passport: ${idNumber}`, 18, 49);
+    doc.text(`Grade Applying: ${gradeApplying}`, 110, 41);
+    doc.text(`Start Year: ${startYear}`, 110, 49);
+
+    const sections = [
+      {
+        title: '1. Learner Personal Details',
+        keys: [
+          'firstName', 'middleName', 'lastName', 'preferredName', 'idNumber',
+          'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
+          'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
+          'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
+          'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
+          'familyPosition', 'siblingsAtSchool'
+        ]
+      },
+      {
+        title: '2. Academic History & Preferences',
+        keys: [
+          'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
+          'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
+          'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
+          'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
+          'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
+          'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
+          'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
+          'teacherSurname', 'teacherPhone', 'teacherRelationship'
+        ]
+      },
+      {
+        title: '3. Medical & Support Information',
+        keys: [
+          'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
+          'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
+          'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
+          'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
+          'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
+          'allowEmergencyTreatment'
+        ]
+      },
+      {
+        title: '4. Parent / Guardian Details',
+        keys: [
+          'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
+          'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
+          'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
+          'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
+          'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
+          'guardian2Phone', 'permissionPhotos'
+        ]
+      },
+      {
+        title: '5. Declaration & Signature',
+        keys: [
+          'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
+          'additionalNotes'
+        ]
+      }
+    ];
+
+    let currentY = 60;
+    const processedKeys = new Set<string>();
+
+    // Render defined sections (displays explicit N/A instead of dropping missing fields)
+    sections.forEach((sec) => {
+      const rows = sec.keys.map((k) => {
+        processedKeys.add(k);
+        const val = cleanValue(allFields[k as keyof typeof allFields]);
+        return [formatLabel(k), val || 'N/A'] as [string, string];
+      });
+
+      autoTable(doc, {
+        startY: currentY,
+        head: [[sec.title, 'Details']],
+        body: rows,
+        theme: 'grid',
+        headStyles: {
+          fillColor: primaryColor,
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 9,
+        },
+        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
+          1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+        },
+        margin: { left: 14, right: 14 },
+        didDrawPage: () => {
+          const pageStr = `Page ${doc.getNumberOfPages()}`;
+          doc.setFontSize(7.5);
+          doc.setTextColor(148, 163, 184);
+          doc.text(pageStr, 196, 287, { align: 'right' });
+          doc.text('Hoye Secondary School — Official Confidential Admission Record', 14, 287);
         }
       });
 
-      const formatLabel = (key: string) =>
-        key
-          .replace(/_/g, ' ')
-          .replace(/([a-z])([A-Z])/g, '$1 $2')
-          .replace(/^./, (str) => str.toUpperCase())
-          .trim();
+      currentY = (doc as any).lastAutoTable.finalY + 8;
+    });
 
-      const cleanValue = (val: any): string => {
-        if (val === null || val === undefined) return '';
-        if (typeof val === 'number' && Number.isNaN(val)) return '';
-        if (String(val) === 'NaN' || String(val).toLowerCase() === 'undefined') return '';
-        if (val instanceof File) return `[Attached File: ${val.name}]`;
-        if (val instanceof FileList && val.length > 0) return `[Attached File: ${val[0].name}]`;
-        if (typeof val === 'boolean') return val ? 'Yes' : 'No';
-        return String(val);
-      };
+    // Catch-all section: dynamic mapping for any custom input fields not listed above
+    const remainingKeys = Object.keys(allFields).filter(
+      (k) => !processedKeys.has(k) && k !== 'pdf_form_path'
+    );
 
-      const doc = new jsPDF();
-      const primaryColor: [number, number, number] = [30, 58, 138];
-      const secondaryColor: [number, number, number] = [71, 85, 105];
-      const lightBg: [number, number, number] = [248, 250, 252];
-
-      doc.setFillColor(...primaryColor);
-      doc.rect(0, 0, 210, 28, 'F');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(15);
-      doc.setTextColor(255, 255, 255);
-      doc.text('HOYE SECONDARY SCHOOL', 14, 15);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(226, 232, 240);
-      doc.text('OFFICIAL ADMISSION APPLICATION RECORD', 14, 22);
-
-      const today = new Date().toLocaleDateString('en-ZA');
-      doc.setFontSize(8);
-      doc.text(`Submitted: ${today}`, 196, 15, { align: 'right' });
-      doc.text('Status: Pending Review', 196, 22, { align: 'right' });
-
-      doc.setFillColor(...lightBg);
-      doc.setDrawColor(226, 232, 240);
-      doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(...primaryColor);
-      const fullName = `${allFields.firstName || ''} ${allFields.lastName || ''}`.trim() || 'N/A';
-      doc.text(`Applicant Name: ${fullName}`, 18, 41);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
-      doc.setTextColor(...secondaryColor);
-      doc.text(`ID / Passport: ${allFields.idNumber || 'N/A'}`, 18, 49);
-      doc.text(`Grade Applying: ${allFields.gradeApplying || 'N/A'}`, 110, 41);
-      doc.text(`Start Year: ${allFields.preferredStartYear || '2027'}`, 110, 49);
-
-      const sections = [
-        {
-          title: '1. Learner Personal Details',
-          keys: [
-            'firstName', 'middleName', 'lastName', 'preferredName', 'idNumber',
-            'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
-            'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
-            'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
-            'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
-            'familyPosition', 'siblingsAtSchool'
-          ]
-        },
-        {
-          title: '2. Academic History & Preferences',
-          keys: [
-            'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
-            'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
-            'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
-            'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
-            'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
-            'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
-            'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
-            'teacherSurname', 'teacherPhone', 'teacherRelationship'
-          ]
-        },
-        {
-          title: '3. Medical & Support Information',
-          keys: [
-            'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
-            'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
-            'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
-            'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
-            'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
-            'allowEmergencyTreatment'
-          ]
-        },
-        {
-          title: '4. Parent / Guardian Details',
-          keys: [
-            'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
-            'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
-            'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
-            'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
-            'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
-            'guardian2Phone', 'permissionPhotos'
-          ]
-        },
-        {
-          title: '5. Declaration & Signature',
-          keys: [
-            'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
-            'additionalNotes'
-          ]
-        }
-      ];
-
-      let currentY = 60;
-
-      sections.forEach((sec) => {
-        const rows = sec.keys
-          .map((k) => {
-            const val = cleanValue(allFields[k as keyof typeof allFields]);
-            return val ? [formatLabel(k), val] : null;
-          })
-          .filter((row): row is [string, string] => row !== null);
-
-        if (rows.length === 0) return;
-
-        autoTable(doc, {
-          startY: currentY,
-          head: [[sec.title, 'Details']],
-          body: rows,
-          theme: 'grid',
-          headStyles: {
-            fillColor: primaryColor,
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 9,
-          },
-          styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
-          columnStyles: {
-            0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
-            1: { cellWidth: 'auto', textColor: [15, 23, 42] },
-          },
-          margin: { left: 14, right: 14 },
-          didDrawPage: () => {
-            const pageStr = `Page ${doc.getNumberOfPages()}`;
-            doc.setFontSize(7.5);
-            doc.setTextColor(148, 163, 184);
-            doc.text(pageStr, 196, 287, { align: 'right' });
-            doc.text('Hoye Secondary School — Official Confidential Admission Record', 14, 287);
-          }
-        });
-
-        currentY = (doc as any).lastAutoTable.finalY + 8;
+    if (remainingKeys.length > 0) {
+      const remainingRows = remainingKeys.map((k) => {
+        const val = cleanValue(allFields[k as keyof typeof allFields]);
+        return [formatLabel(k), val || 'N/A'] as [string, string];
       });
 
-      const pdfBlob = doc.output('blob');
-      formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
-
-      const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
-        method: 'POST',
-        body: formData,
+      autoTable(doc, {
+        startY: currentY,
+        head: [['6. Additional Form Details', 'Details']],
+        body: remainingRows,
+        theme: 'grid',
+        headStyles: {
+          fillColor: primaryColor,
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 9,
+        },
+        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
+          1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+        },
+        margin: { left: 14, right: 14 },
       });
-
-      if (!response.ok) {
-        throw new Error(`Server status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.status === 'success' || result.tracking_number || result.refNumber) {
-        const generatedRef =
-          result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
-        setSubmissionResult({
-          refNumber: generatedRef,
-          message: result.message || 'Your application has been received successfully.',
-        });
-        setShowSuccess(true);
-      } else {
-        alert('Submission failed: ' + (result.message || 'Please check your details.'));
-      }
-    } catch (error: any) {
-      console.error('Submission error:', error);
-      alert('Unable to reach the server: ' + (error.message || 'Please try again.'));
     }
-  };
+
+    const pdfBlob = doc.output('blob');
+    formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
+
+    const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.status === 'success' || result.tracking_number || result.refNumber) {
+      const generatedRef =
+        result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
+      setSubmissionResult({
+        refNumber: generatedRef,
+        message: result.message || 'Your application has been received successfully.',
+      });
+      setShowSuccess(true);
+    } else {
+      alert('Submission failed: ' + (result.message || 'Please check your details.'));
+    }
+  } catch (error: any) {
+    console.error('Submission error:', error);
+    alert('Unable to reach the server: ' + (error.message || 'Please try again.'));
+  }
+};
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-background via-muted/20 to-muted/40">
