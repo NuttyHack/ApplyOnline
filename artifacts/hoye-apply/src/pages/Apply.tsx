@@ -213,6 +213,8 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
   };
 
 const onSubmit = async (data: ApplicationInput) => {
+  let tempContainer: HTMLDivElement | null = null;
+
   try {
     const formData = new FormData();
 
@@ -230,119 +232,128 @@ const onSubmit = async (data: ApplicationInput) => {
     });
 
     // 2. Build full HTML document for PDF snapshot
-    const element = document.createElement('div');
-    element.style.padding = '24px';
-    element.style.fontFamily = 'Arial, sans-serif';
-    element.style.color = '#1e293b';
-
-    const formatLabel = (key: string) =>
-      key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
-
-    const renderRows = (fields: (keyof ApplicationInput)[]) => {
-      return fields
-        .map((field) => {
-          const val = data[field];
-          if (val === undefined || val === null || val === '') return '';
-          return `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-              <td style="padding: 6px 8px; font-weight: 600; width: 45%; color: #475569; font-size: 11px;">${formatLabel(field)}</td>
-              <td style="padding: 6px 8px; color: #0f172a; font-size: 11px;">${String(val)}</td>
-            </tr>
-          `;
-        })
-        .join('');
-    };
-
-    element.innerHTML = `
-      <div style="text-align: center; border-bottom: 2px solid #1e40af; padding-bottom: 12px; margin-bottom: 20px;">
-        <h1 style="color: #1e40af; margin: 0; font-size: 20px;">HOYE SECONDARY SCHOOL</h1>
-        <p style="margin: 4px 0 0; font-weight: bold; color: #2563eb; font-size: 13px;">OFFICIAL ADMISSION APPLICATION RECORD</p>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">1. Learner Information</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          ${renderRows([
-            'firstName', 'lastName', 'middleName', 'preferredName', 'idNumber',
-            'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
-            'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
-            'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
-            'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
-            'familyPosition', 'siblingsAtSchool'
-          ])}
-        </table>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">2. Academic Details</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          ${renderRows([
-            'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
-            'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
-            'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
-            'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
-            'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
-            'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
-            'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
-            'teacherSurname', 'teacherPhone', 'teacherRelationship'
-          ])}
-        </table>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">3. Medical & Support Details</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          ${renderRows([
-            'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
-            'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
-            'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
-            'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
-            'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
-            'allowEmergencyTreatment'
-          ])}
-        </table>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">4. Parent / Guardian Information</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          ${renderRows([
-            'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
-            'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
-            'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
-            'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
-            'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
-            'guardian2Phone', 'permissionPhotos'
-          ])}
-        </table>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">5. Declaration & Submission Details</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          ${renderRows([
-            'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
-            'additionalNotes'
-          ])}
-        </table>
-      </div>
-    `;
-
-    // 3. Generate PDF Blob
     if (typeof window !== 'undefined' && (window as any).html2pdf) {
+      tempContainer = document.createElement('div');
+
+      // Position element off-screen with explicit dimensions so html2canvas can measure width/height
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '0';
+      tempContainer.style.width = '794px'; // A4 width at 96 DPI
+      tempContainer.style.padding = '24px';
+      tempContainer.style.backgroundColor = '#ffffff';
+      tempContainer.style.fontFamily = 'Arial, sans-serif';
+      tempContainer.style.color = '#1e293b';
+
+      const formatLabel = (key: string) =>
+        key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+
+      const renderRows = (fields: (keyof ApplicationInput)[]) => {
+        return fields
+          .map((field) => {
+            const val = data[field];
+            if (val === undefined || val === null || val === '') return '';
+            return `
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 6px 8px; font-weight: 600; width: 45%; color: #475569; font-size: 11px;">${formatLabel(field)}</td>
+                <td style="padding: 6px 8px; color: #0f172a; font-size: 11px;">${String(val)}</td>
+              </tr>
+            `;
+          })
+          .join('');
+      };
+
+      tempContainer.innerHTML = `
+        <div style="text-align: center; border-bottom: 2px solid #1e40af; padding-bottom: 12px; margin-bottom: 20px;">
+          <h1 style="color: #1e40af; margin: 0; font-size: 20px;">HOYE SECONDARY SCHOOL</h1>
+          <p style="margin: 4px 0 0; font-weight: bold; color: #2563eb; font-size: 13px;">OFFICIAL ADMISSION APPLICATION RECORD</p>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">1. Learner Information</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${renderRows([
+              'firstName', 'lastName', 'middleName', 'preferredName', 'idNumber',
+              'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
+              'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
+              'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
+              'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
+              'familyPosition', 'siblingsAtSchool'
+            ])}
+          </table>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">2. Academic Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${renderRows([
+              'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
+              'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
+              'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
+              'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
+              'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
+              'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
+              'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
+              'teacherSurname', 'teacherPhone', 'teacherRelationship'
+            ])}
+          </table>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">3. Medical & Support Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${renderRows([
+              'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
+              'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
+              'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
+              'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
+              'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
+              'allowEmergencyTreatment'
+            ])}
+          </table>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">4. Parent / Guardian Information</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${renderRows([
+              'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
+              'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
+              'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
+              'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
+              'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
+              'guardian2Phone', 'permissionPhotos'
+            ])}
+          </table>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h3 style="background: #f1f5f9; padding: 6px 8px; color: #1e40af; font-size: 12px; margin: 0 0 6px;">5. Declaration & Submission Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            ${renderRows([
+              'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
+              'additionalNotes'
+            ])}
+          </table>
+        </div>
+      `;
+
+      // Attach container to DOM so html2canvas can measure element dimensions
+      document.body.appendChild(tempContainer);
+
       const opt = {
         margin: 8,
         filename: 'Application.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       };
 
-      const pdfBlob = await (window as any).html2pdf().set(opt).from(element).output('blob');
+      const pdfBlob = await (window as any).html2pdf().set(opt).from(tempContainer).output('blob');
       formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
     }
 
-    // 4. Submit to PHP Backend
+    // 3. Dispatch to live PHP backend pipeline
     const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
       method: 'POST',
       body: formData,
@@ -368,6 +379,11 @@ const onSubmit = async (data: ApplicationInput) => {
   } catch (error: any) {
     console.error('Submission error:', error);
     alert('Unable to reach the server: ' + (error.message || 'Please try again.'));
+  } finally {
+    // Remove temporary DOM container after PDF generation
+    if (tempContainer && document.body.contains(tempContainer)) {
+      document.body.removeChild(tempContainer);
+    }
   }
 };
 
