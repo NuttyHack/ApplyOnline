@@ -14,8 +14,8 @@ interface Step4Props {
 
 export function Step4Guardian({ form }: Step4Props) {
   const { register, watch, setValue, formState: { errors } } = form;
-  const guardianEmploymentStatus = watch('guardianEmploymentStatus');
-  const hasSecondGuardian = watch('hasSecondGuardian');
+  const guardianEmploymentStatus = watch('guardian_employment_status');
+  const hasSecondGuardian = watch('has_second_guardian');
 
   const isEmployed = guardianEmploymentStatus && ['Employed', 'Self Employed', 'Part Time', 'Contract Worker'].includes(guardianEmploymentStatus);
 
@@ -34,30 +34,30 @@ export function Step4Guardian({ form }: Step4Props) {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="guardianFirstName">First Name *</Label>
-              <Input id="guardianFirstName" {...register('guardianFirstName', { required: true })} data-testid="input-guardianFirstName" />
-              {errors.guardianFirstName && <p className="text-sm text-destructive">Guardian first name is required</p>}
+              <Label htmlFor="guardian_first_name">First Name *</Label>
+              <Input id="guardian_first_name" {...register('guardian_first_name', { required: true })} data-testid="input-guardian_first_name" />
+              {errors.guardian_first_name && <p className="text-sm text-destructive">Guardian first name is required</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="guardianLastName">Last Name *</Label>
-              <Input id="guardianLastName" {...register('guardianLastName', { required: true })} data-testid="input-guardianLastName" />
-              {errors.guardianLastName && <p className="text-sm text-destructive">Guardian last name is required</p>}
+              <Label htmlFor="guardian_last_name">Last Name *</Label>
+              <Input id="guardian_last_name" {...register('guardian_last_name', { required: true })} data-testid="input-guardian_last_name" />
+              {errors.guardian_last_name && <p className="text-sm text-destructive">Guardian last name is required</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="guardianId">ID or Passport Number *</Label>
-              <Input id="guardianId" {...register('guardianId', { required: true })} data-testid="input-guardianId" />
-              {errors.guardianId && <p className="text-sm text-destructive">Guardian ID is required</p>}
+              <Label htmlFor="guardian_id">ID or Passport Number *</Label>
+              <Input id="guardian_id" {...register('guardian_id', { required: true })} data-testid="input-guardian_id" />
+              {errors.guardian_id && <p className="text-sm text-destructive">Guardian ID is required</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="guardianRelationship">Relationship to Learner *</Label>
+              <Label htmlFor="guardian_relationship">Relationship to Learner *</Label>
               <Select
-                value={watch('guardianRelationship')}
-                onValueChange={(value) => setValue('guardianRelationship', value)}
+                value={watch('guardian_relationship')}
+                onValueChange={(value) => setValue('guardian_relationship', value)}
               >
-                <SelectTrigger id="guardianRelationship" data-testid="select-guardianRelationship">
+                <SelectTrigger id="guardian_relationship" data-testid="select-guardian_relationship">
                   <SelectValue placeholder="Select relationship" />
                 </SelectTrigger>
                 <SelectContent>
@@ -74,16 +74,16 @@ export function Step4Guardian({ form }: Step4Props) {
                   <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.guardianRelationship && <p className="text-sm text-destructive">Relationship is required</p>}
+              {errors.guardian_relationship && <p className="text-sm text-destructive">Relationship is required</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="guardianMaritalStatus">Marital Status</Label>
+              <Label htmlFor="guardian_marital_status">Marital Status</Label>
               <Select
-                value={watch('guardianMaritalStatus') || ''}
-                onValueChange={(value) => setValue('guardianMaritalStatus', value)}
+                value={watch('guardian_marital_status') || ''}
+                onValueChange={(value) => setValue('guardian_marital_status', value)}
               >
-                <SelectTrigger id="guardianMaritalStatus" data-testid="select-guardianMaritalStatus">
+                <SelectTrigger id="guardian_marital_status" data-testid="select-guardian_marital_status">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -106,33 +106,33 @@ export function Step4Guardian({ form }: Step4Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="guardianPhone">Primary Phone Number *</Label>
-            <Input id="guardianPhone" {...register('guardianPhone', { required: true })} data-testid="input-guardianPhone" />
-            {errors.guardianPhone && <p className="text-sm text-destructive">Guardian phone is required</p>}
+            <Label htmlFor="guardian_phone">Primary Phone Number *</Label>
+            <Input id="guardian_phone" {...register('guardian_phone', { required: true })} data-testid="input-guardian_phone" />
+            {errors.guardian_phone && <p className="text-sm text-destructive">Guardian phone is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianAltPhone">Alternative Phone Number</Label>
-            <Input id="guardianAltPhone" {...register('guardianAltPhone')} data-testid="input-guardianAltPhone" />
+            <Label htmlFor="guardian_alt_phone">Alternative Phone Number</Label>
+            <Input id="guardian_alt_phone" {...register('guardian_alt_phone')} data-testid="input-guardian_alt_phone" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianWhatsapp">WhatsApp Number</Label>
-            <Input id="guardianWhatsapp" {...register('guardianWhatsapp')} data-testid="input-guardianWhatsapp" />
+            <Label htmlFor="guardian_whatsapp">WhatsApp Number</Label>
+            <Input id="guardian_whatsapp" {...register('guardian_whatsapp')} data-testid="input-guardian_whatsapp" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianEmail">Email Address</Label>
-            <Input id="guardianEmail" type="email" {...register('guardianEmail')} data-testid="input-guardianEmail" />
+            <Label htmlFor="guardian_email">Email Address</Label>
+            <Input id="guardian_email" type="email" {...register('guardian_email')} data-testid="input-guardian_email" />
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="preferredCommunication">Preferred Communication Method</Label>
+            <Label htmlFor="preferred_communication">Preferred Communication Method</Label>
             <Select
-              value={watch('preferredCommunication') || ''}
-              onValueChange={(value) => setValue('preferredCommunication', value)}
+              value={watch('preferred_communication') || ''}
+              onValueChange={(value) => setValue('preferred_communication', value)}
             >
-              <SelectTrigger id="preferredCommunication" data-testid="select-preferredCommunication">
+              <SelectTrigger id="preferred_communication" data-testid="select-preferred_communication">
                 <SelectValue placeholder="Select method" />
               </SelectTrigger>
               <SelectContent>
@@ -153,12 +153,12 @@ export function Step4Guardian({ form }: Step4Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="guardianEmploymentStatus">Employment Status</Label>
+            <Label htmlFor="guardian_employment_status">Employment Status</Label>
             <Select
               value={guardianEmploymentStatus || ''}
-              onValueChange={(value) => setValue('guardianEmploymentStatus', value)}
+              onValueChange={(value) => setValue('guardian_employment_status', value)}
             >
-              <SelectTrigger id="guardianEmploymentStatus" data-testid="select-guardianEmploymentStatus">
+              <SelectTrigger id="guardian_employment_status" data-testid="select-guardian_employment_status">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
@@ -176,22 +176,22 @@ export function Step4Guardian({ form }: Step4Props) {
           {isEmployed && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg border">
               <div className="space-y-2">
-                <Label htmlFor="guardianOccupation">Occupation</Label>
-                <Input id="guardianOccupation" {...register('guardianOccupation')} data-testid="input-guardianOccupation" />
+                <Label htmlFor="guardian_occupation">Occupation</Label>
+                <Input id="guardian_occupation" {...register('guardian_occupation')} data-testid="input-guardian_occupation" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="guardianEmployer">Employer Name</Label>
-                <Input id="guardianEmployer" {...register('guardianEmployer')} data-testid="input-guardianEmployer" />
+                <Label htmlFor="guardian_employer">Employer Name</Label>
+                <Input id="guardian_employer" {...register('guardian_employer')} data-testid="input-guardian_employer" />
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="guardianIncomeRange">Monthly Income Range</Label>
+                <Label htmlFor="guardian_income_range">Monthly Income Range</Label>
                 <Select
-                  value={watch('guardianIncomeRange') || ''}
-                  onValueChange={(value) => setValue('guardianIncomeRange', value)}
+                  value={watch('guardian_income_range') || ''}
+                  onValueChange={(value) => setValue('guardian_income_range', value)}
                 >
-                  <SelectTrigger id="guardianIncomeRange" data-testid="select-guardianIncomeRange">
+                  <SelectTrigger id="guardian_income_range" data-testid="select-guardian_income_range">
                     <SelectValue placeholder="Select range" />
                   </SelectTrigger>
                   <SelectContent>
@@ -216,8 +216,8 @@ export function Step4Guardian({ form }: Step4Props) {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="guardianHomeAddress">Full Address</Label>
-            <Textarea id="guardianHomeAddress" {...register('guardianHomeAddress')} rows={3} placeholder="Street address, suburb, city, postal code" data-testid="textarea-guardianHomeAddress" />
+            <Label htmlFor="guardian_home_address">Full Address</Label>
+            <Textarea id="guardian_home_address" {...register('guardian_home_address')} rows={3} placeholder="Street address, suburb, city, postal code" data-testid="textarea-guardian_home_address" />
             <p className="text-sm text-muted-foreground">If same as learner's address, you may leave blank</p>
           </div>
         </CardContent>
@@ -230,12 +230,12 @@ export function Step4Guardian({ form }: Step4Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="hasSecondGuardian">Is There a Second Guardian?</Label>
+            <Label htmlFor="has_second_guardian">Is There a Second Guardian?</Label>
             <Select
               value={hasSecondGuardian || ''}
-              onValueChange={(value) => setValue('hasSecondGuardian', value)}
+              onValueChange={(value) => setValue('has_second_guardian', value)}
             >
-              <SelectTrigger id="hasSecondGuardian" data-testid="select-hasSecondGuardian">
+              <SelectTrigger id="has_second_guardian" data-testid="select-has_second_guardian">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -248,13 +248,13 @@ export function Step4Guardian({ form }: Step4Props) {
           {hasSecondGuardian === 'Yes' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg border">
               <div className="space-y-2">
-                <Label htmlFor="guardian2Name">Second Guardian Full Name</Label>
-                <Input id="guardian2Name" {...register('guardian2Name')} data-testid="input-guardian2Name" />
+                <Label htmlFor="guardian_2_name">Second Guardian Full Name</Label>
+                <Input id="guardian_2_name" {...register('guardian_2_name')} data-testid="input-guardian_2_name" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="guardian2Phone">Second Guardian Phone Number</Label>
-                <Input id="guardian2Phone" {...register('guardian2Phone')} data-testid="input-guardian2Phone" />
+                <Label htmlFor="guardian_2_phone">Second Guardian Phone Number</Label>
+                <Input id="guardian_2_phone" {...register('guardian_2_phone')} data-testid="input-guardian_2_phone" />
               </div>
             </div>
           )}
@@ -268,12 +268,12 @@ export function Step4Guardian({ form }: Step4Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="permissionPhotos">Allow Photos/Videos for School Use?</Label>
+            <Label htmlFor="permission_photos">Allow Photos/Videos for School Use?</Label>
             <Select
-              value={watch('permissionPhotos') || ''}
-              onValueChange={(value) => setValue('permissionPhotos', value)}
+              value={watch('permission_photos') || ''}
+              onValueChange={(value) => setValue('permission_photos', value)}
             >
-              <SelectTrigger id="permissionPhotos" data-testid="select-permissionPhotos">
+              <SelectTrigger id="permission_photos" data-testid="select-permission_photos">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>

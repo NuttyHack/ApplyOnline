@@ -14,9 +14,9 @@ interface Step3Props {
 
 export function Step3Medical({ form }: Step3Props) {
   const { register, watch, setValue, formState: { errors } } = form;
-  const hasMedicalAid = watch('hasMedicalAid');
-  const hasFamilyDoctor = watch('hasFamilyDoctor');
-  const hasDisability = watch('hasDisability');
+  const hasMedicalAid = watch('has_medical_aid');
+  const hasFamilyDoctor = watch('has_family_doctor');
+  const hasDisability = watch('has_disability');
 
   return (
     <div className="space-y-6">
@@ -32,12 +32,12 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="hasMedicalAid">Do You Have Medical Aid?</Label>
+            <Label htmlFor="has_medical_aid">Do You Have Medical Aid?</Label>
             <Select
               value={hasMedicalAid || ''}
-              onValueChange={(value) => setValue('hasMedicalAid', value)}
+              onValueChange={(value) => setValue('has_medical_aid', value)}
             >
-              <SelectTrigger id="hasMedicalAid" data-testid="select-hasMedicalAid">
+              <SelectTrigger id="has_medical_aid" data-testid="select-has_medical_aid">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -50,13 +50,13 @@ export function Step3Medical({ form }: Step3Props) {
           {hasMedicalAid === 'Yes' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg border">
               <div className="space-y-2">
-                <Label htmlFor="medAidProvider">Medical Aid Provider</Label>
-                <Input id="medAidProvider" {...register('medAidProvider')} placeholder="e.g., Discovery, Bonitas" data-testid="input-medAidProvider" />
+                <Label htmlFor="med_aid_provider">Medical Aid Provider</Label>
+                <Input id="med_aid_provider" {...register('med_aid_provider')} placeholder="e.g., Discovery, Bonitas" data-testid="input-med_aid_provider" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="medAidNumber">Medical Aid Number</Label>
-                <Input id="medAidNumber" {...register('medAidNumber')} data-testid="input-medAidNumber" />
+                <Label htmlFor="med_aid_number">Medical Aid Number</Label>
+                <Input id="med_aid_number" {...register('med_aid_number')} data-testid="input-med_aid_number" />
               </div>
             </div>
           )}
@@ -70,12 +70,12 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="hasFamilyDoctor">Do You Have a Family Doctor?</Label>
+            <Label htmlFor="has_family_doctor">Do You Have a Family Doctor?</Label>
             <Select
               value={hasFamilyDoctor || ''}
-              onValueChange={(value) => setValue('hasFamilyDoctor', value)}
+              onValueChange={(value) => setValue('has_family_doctor', value)}
             >
-              <SelectTrigger id="hasFamilyDoctor" data-testid="select-hasFamilyDoctor">
+              <SelectTrigger id="has_family_doctor" data-testid="select-has_family_doctor">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -88,13 +88,13 @@ export function Step3Medical({ form }: Step3Props) {
           {hasFamilyDoctor === 'Yes' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg border">
               <div className="space-y-2">
-                <Label htmlFor="doctorName">Doctor Name</Label>
-                <Input id="doctorName" {...register('doctorName')} data-testid="input-doctorName" />
+                <Label htmlFor="doctor_name">Doctor Name</Label>
+                <Input id="doctor_name" {...register('doctor_name')} data-testid="input-doctor_name" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="doctorPhone">Doctor Phone Number</Label>
-                <Input id="doctorPhone" {...register('doctorPhone')} data-testid="input-doctorPhone" />
+                <Label htmlFor="doctor_phone">Doctor Phone Number</Label>
+                <Input id="doctor_phone" {...register('doctor_phone')} data-testid="input-doctor_phone" />
               </div>
             </div>
           )}
@@ -111,24 +111,24 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="emergencyName">Emergency Contact Name *</Label>
-            <Input id="emergencyName" {...register('emergencyName', { required: true })} data-testid="input-emergencyName" />
-            {errors.emergencyName && <p className="text-sm text-destructive">Emergency contact name is required</p>}
+            <Label htmlFor="emergency_name">Emergency Contact Name *</Label>
+            <Input id="emergency_name" {...register('emergency_name', { required: true })} data-testid="input-emergency_name" />
+            {errors.emergency_name && <p className="text-sm text-destructive">Emergency contact name is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="emergencyPhone">Emergency Contact Phone *</Label>
-            <Input id="emergencyPhone" {...register('emergencyPhone', { required: true })} data-testid="input-emergencyPhone" />
-            {errors.emergencyPhone && <p className="text-sm text-destructive">Emergency contact phone is required</p>}
+            <Label htmlFor="emergency_phone">Emergency Contact Phone *</Label>
+            <Input id="emergency_phone" {...register('emergency_phone', { required: true })} data-testid="input-emergency_phone" />
+            {errors.emergency_phone && <p className="text-sm text-destructive">Emergency contact phone is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="emergencyRelationship">Relationship to Learner</Label>
+            <Label htmlFor="emergency_relationship">Relationship to Learner</Label>
             <Select
-              value={watch('emergencyRelationship') || ''}
-              onValueChange={(value) => setValue('emergencyRelationship', value)}
+              value={watch('emergency_relationship') || ''}
+              onValueChange={(value) => setValue('emergency_relationship', value)}
             >
-              <SelectTrigger id="emergencyRelationship" data-testid="select-emergencyRelationship">
+              <SelectTrigger id="emergency_relationship" data-testid="select-emergency_relationship">
                 <SelectValue placeholder="Select relationship" />
               </SelectTrigger>
               <SelectContent>
@@ -155,18 +155,18 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="medicalAllergies">Known Allergies</Label>
-            <Textarea id="medicalAllergies" {...register('medicalAllergies')} rows={2} placeholder="List any allergies (food, medication, environmental)" data-testid="textarea-medicalAllergies" />
+            <Label htmlFor="medical_allergies">Known Allergies</Label>
+            <Textarea id="medical_allergies" {...register('medical_allergies')} rows={2} placeholder="List any allergies (food, medication, environmental)" data-testid="textarea-medical_allergies" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="medicalConditions">Chronic Medical Conditions</Label>
-            <Textarea id="medicalConditions" {...register('medicalConditions')} rows={2} placeholder="List any chronic conditions" data-testid="textarea-medicalConditions" />
+            <Label htmlFor="medical_conditions">Chronic Medical Conditions</Label>
+            <Textarea id="medical_conditions" {...register('medical_conditions')} rows={2} placeholder="List any chronic conditions" data-testid="textarea-medical_conditions" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="currentMedication">Current Medication</Label>
-            <Textarea id="currentMedication" {...register('currentMedication')} rows={2} placeholder="List any medication currently being taken" data-testid="textarea-currentMedication" />
+            <Label htmlFor="current_medication">Current Medication</Label>
+            <Textarea id="current_medication" {...register('current_medication')} rows={2} placeholder="List any medication currently being taken" data-testid="textarea-current_medication" />
           </div>
         </CardContent>
       </Card>
@@ -178,12 +178,12 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="medAsthma">Asthma</Label>
+            <Label htmlFor="med_asthma">Asthma</Label>
             <Select
-              value={watch('medAsthma') || ''}
-              onValueChange={(value) => setValue('medAsthma', value)}
+              value={watch('med_asthma') || ''}
+              onValueChange={(value) => setValue('med_asthma', value)}
             >
-              <SelectTrigger id="medAsthma" data-testid="select-medAsthma">
+              <SelectTrigger id="med_asthma" data-testid="select-med_asthma">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -194,12 +194,12 @@ export function Step3Medical({ form }: Step3Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="medEpilepsy">Epilepsy</Label>
+            <Label htmlFor="med_epilepsy">Epilepsy</Label>
             <Select
-              value={watch('medEpilepsy') || ''}
-              onValueChange={(value) => setValue('medEpilepsy', value)}
+              value={watch('med_epilepsy') || ''}
+              onValueChange={(value) => setValue('med_epilepsy', value)}
             >
-              <SelectTrigger id="medEpilepsy" data-testid="select-medEpilepsy">
+              <SelectTrigger id="med_epilepsy" data-testid="select-med_epilepsy">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -210,12 +210,12 @@ export function Step3Medical({ form }: Step3Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="medDiabetes">Diabetes</Label>
+            <Label htmlFor="med_diabetes">Diabetes</Label>
             <Select
-              value={watch('medDiabetes') || ''}
-              onValueChange={(value) => setValue('medDiabetes', value)}
+              value={watch('med_diabetes') || ''}
+              onValueChange={(value) => setValue('med_diabetes', value)}
             >
-              <SelectTrigger id="medDiabetes" data-testid="select-medDiabetes">
+              <SelectTrigger id="med_diabetes" data-testid="select-med_diabetes">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -234,12 +234,12 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="hasDisability">Does the Learner Have a Disability?</Label>
+            <Label htmlFor="has_disability">Does the Learner Have a Disability?</Label>
             <Select
               value={hasDisability || ''}
-              onValueChange={(value) => setValue('hasDisability', value)}
+              onValueChange={(value) => setValue('has_disability', value)}
             >
-              <SelectTrigger id="hasDisability" data-testid="select-hasDisability">
+              <SelectTrigger id="has_disability" data-testid="select-has_disability">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -251,8 +251,8 @@ export function Step3Medical({ form }: Step3Props) {
 
           {hasDisability === 'Yes' && (
             <div className="space-y-2 p-4 bg-muted/30 rounded-lg border">
-              <Label htmlFor="disabilityDetails">Please Provide Details</Label>
-              <Textarea id="disabilityDetails" {...register('disabilityDetails')} rows={3} placeholder="Describe the disability and any special accommodations needed" data-testid="textarea-disabilityDetails" />
+              <Label htmlFor="disability_details">Please Provide Details</Label>
+              <Textarea id="disability_details" {...register('disability_details')} rows={3} placeholder="Describe the disability and any special accommodations needed" data-testid="textarea-disability_details" />
             </div>
           )}
         </CardContent>
@@ -265,12 +265,12 @@ export function Step3Medical({ form }: Step3Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="needsCounselling">Needs Counselling Support?</Label>
+            <Label htmlFor="needs_counselling">Needs Counselling Support?</Label>
             <Select
-              value={watch('needsCounselling') || ''}
-              onValueChange={(value) => setValue('needsCounselling', value)}
+              value={watch('needs_counselling') || ''}
+              onValueChange={(value) => setValue('needs_counselling', value)}
             >
-              <SelectTrigger id="needsCounselling" data-testid="select-needsCounselling">
+              <SelectTrigger id="needs_counselling" data-testid="select-needs_counselling">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -281,12 +281,12 @@ export function Step3Medical({ form }: Step3Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sportsAllowed">Allowed to Participate in Sports?</Label>
+            <Label htmlFor="sports_allowed">Allowed to Participate in Sports?</Label>
             <Select
-              value={watch('sportsAllowed') || ''}
-              onValueChange={(value) => setValue('sportsAllowed', value)}
+              value={watch('sports_allowed') || ''}
+              onValueChange={(value) => setValue('sports_allowed', value)}
             >
-              <SelectTrigger id="sportsAllowed" data-testid="select-sportsAllowed">
+              <SelectTrigger id="sports_allowed" data-testid="select-sports_allowed">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -298,12 +298,12 @@ export function Step3Medical({ form }: Step3Props) {
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="allowEmergencyTreatment">Allow Emergency Medical Treatment?</Label>
+            <Label htmlFor="allow_emergency_treatment">Allow Emergency Medical Treatment?</Label>
             <Select
-              value={watch('allowEmergencyTreatment') || ''}
-              onValueChange={(value) => setValue('allowEmergencyTreatment', value)}
+              value={watch('allow_emergency_treatment') || ''}
+              onValueChange={(value) => setValue('allow_emergency_treatment', value)}
             >
-              <SelectTrigger id="allowEmergencyTreatment" data-testid="select-allowEmergencyTreatment">
+              <SelectTrigger id="allow_emergency_treatment" data-testid="select-allow_emergency_treatment">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>

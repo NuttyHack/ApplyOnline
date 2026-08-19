@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -5,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { FileText, Upload, AlertCircle } from 'lucide-react';
+import { FileText, Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { ApplicationInput } from '@workspace/api-client-react';
 
 interface Step5Props {
@@ -14,8 +15,20 @@ interface Step5Props {
 
 export function Step5Submit({ form }: Step5Props) {
   const { register, watch, setValue, formState: { errors } } = form;
-  const confirmTruth = watch('confirmTruth');
-  const agreePolicies = watch('agreePolicies');
+  const confirmTruth = watch('confirm_truth');
+  const agreePolicies = watch('agree_policies');
+
+  // Track selected file objects locally for UI feedback
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, File>>({});
+
+  const handleFileChange = (fieldName: keyof ApplicationInput, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFiles((prev) => ({ ...prev, [fieldName]: file }));
+      // Store File object or base64 string in form state depending on backend requirements
+      setValue(fieldName as any, file, { shouldValidate: true });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -41,79 +54,94 @@ export function Step5Submit({ form }: Step5Props) {
           </Alert>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Document Upload Cards */}
-            <div className="p-4 border-2 border-dashed rounded-lg hover:border-primary transition-colors">
-              <Label htmlFor="doc-birth-cert" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-primary" />
+            {/* Learner Birth Certificate / ID */}
+            <div className={`p-4 border-2 border-dashed rounded-lg transition-colors ${selectedFiles['doc_birth_cert' as keyof ApplicationInput] ? 'border-green-500 bg-green-50/20' : 'hover:border-primary'}`}>
+              <Label htmlFor="doc_birth_cert" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedFiles['doc_birth_cert' as keyof ApplicationInput] ? 'bg-green-100 text-green-600' : 'bg-primary/10 text-primary'}`}>
+                  {selectedFiles['doc_birth_cert' as keyof ApplicationInput] ? <CheckCircle2 className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                 </div>
                 <div className="text-center">
                   <p className="font-medium text-sm">Learner Birth Certificate / ID *</p>
-                  <p className="text-xs text-muted-foreground mt-1">Click to upload</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedFiles['doc_birth_cert' as keyof ApplicationInput]?.name || 'Click to upload document'}
+                  </p>
                 </div>
                 <Input
-                  id="doc-birth-cert"
+                  id="doc_birth_cert"
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   className="sr-only"
                   data-testid="upload-birth-cert"
+                  onChange={(e) => handleFileChange('doc_birth_cert' as keyof ApplicationInput, e)}
                 />
               </Label>
             </div>
 
-            <div className="p-4 border-2 border-dashed rounded-lg hover:border-primary transition-colors">
-              <Label htmlFor="doc-report" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-primary" />
+            {/* Latest School Report */}
+            <div className={`p-4 border-2 border-dashed rounded-lg transition-colors ${selectedFiles['doc_latest_report' as keyof ApplicationInput] ? 'border-green-500 bg-green-50/20' : 'hover:border-primary'}`}>
+              <Label htmlFor="doc_latest_report" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedFiles['doc_latest_report' as keyof ApplicationInput] ? 'bg-green-100 text-green-600' : 'bg-primary/10 text-primary'}`}>
+                  {selectedFiles['doc_latest_report' as keyof ApplicationInput] ? <CheckCircle2 className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                 </div>
                 <div className="text-center">
                   <p className="font-medium text-sm">Latest School Report *</p>
-                  <p className="text-xs text-muted-foreground mt-1">Click to upload</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedFiles['doc_latest_report' as keyof ApplicationInput]?.name || 'Click to upload document'}
+                  </p>
                 </div>
                 <Input
-                  id="doc-report"
+                  id="doc_latest_report"
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   className="sr-only"
                   data-testid="upload-report"
+                  onChange={(e) => handleFileChange('doc_latest_report' as keyof ApplicationInput, e)}
                 />
               </Label>
             </div>
 
-            <div className="p-4 border-2 border-dashed rounded-lg hover:border-primary transition-colors">
-              <Label htmlFor="doc-guardian-id" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-primary" />
+            {/* Parent / Guardian ID Copy */}
+            <div className={`p-4 border-2 border-dashed rounded-lg transition-colors ${selectedFiles['doc_guardian_id' as keyof ApplicationInput] ? 'border-green-500 bg-green-50/20' : 'hover:border-primary'}`}>
+              <Label htmlFor="doc_guardian_id" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedFiles['doc_guardian_id' as keyof ApplicationInput] ? 'bg-green-100 text-green-600' : 'bg-primary/10 text-primary'}`}>
+                  {selectedFiles['doc_guardian_id' as keyof ApplicationInput] ? <CheckCircle2 className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                 </div>
                 <div className="text-center">
                   <p className="font-medium text-sm">Parent/Guardian ID Copy *</p>
-                  <p className="text-xs text-muted-foreground mt-1">Click to upload</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedFiles['doc_guardian_id' as keyof ApplicationInput]?.name || 'Click to upload document'}
+                  </p>
                 </div>
                 <Input
-                  id="doc-guardian-id"
+                  id="doc_guardian_id"
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   className="sr-only"
                   data-testid="upload-guardian-id"
+                  onChange={(e) => handleFileChange('doc_guardian_id' as keyof ApplicationInput, e)}
                 />
               </Label>
             </div>
 
-            <div className="p-4 border-2 border-dashed rounded-lg hover:border-primary transition-colors">
-              <Label htmlFor="doc-proof-residence" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-primary" />
+            {/* Proof of Residence */}
+            <div className={`p-4 border-2 border-dashed rounded-lg transition-colors ${selectedFiles['doc_proof_residence' as keyof ApplicationInput] ? 'border-green-500 bg-green-50/20' : 'hover:border-primary'}`}>
+              <Label htmlFor="doc_proof_residence" className="flex flex-col items-center justify-center gap-2 cursor-pointer h-full min-h-[120px]">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selectedFiles['doc_proof_residence' as keyof ApplicationInput] ? 'bg-green-100 text-green-600' : 'bg-primary/10 text-primary'}`}>
+                  {selectedFiles['doc_proof_residence' as keyof ApplicationInput] ? <CheckCircle2 className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
                 </div>
                 <div className="text-center">
                   <p className="font-medium text-sm">Proof of Residence *</p>
-                  <p className="text-xs text-muted-foreground mt-1">Click to upload</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {selectedFiles['doc_proof_residence' as keyof ApplicationInput]?.name || 'Click to upload document'}
+                  </p>
                 </div>
                 <Input
-                  id="doc-proof-residence"
+                  id="doc_proof_residence"
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   className="sr-only"
                   data-testid="upload-proof-residence"
+                  onChange={(e) => handleFileChange('doc_proof_residence' as keyof ApplicationInput, e)}
                 />
               </Label>
             </div>
@@ -132,13 +160,13 @@ export function Step5Submit({ form }: Step5Props) {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="additionalNotes">Any Additional Comments or Information</Label>
+            <Label htmlFor="additional_notes">Any Additional Comments or Information</Label>
             <Textarea
-              id="additionalNotes"
-              {...register('additionalNotes')}
+              id="additional_notes"
+              {...register('additional_notes')}
               rows={4}
               placeholder="Use this space to provide any additional information you think is relevant to your application"
-              data-testid="textarea-additionalNotes"
+              data-testid="textarea-additional_notes"
             />
           </div>
         </CardContent>
@@ -169,52 +197,52 @@ export function Step5Submit({ form }: Step5Props) {
           <div className="space-y-4 pt-4 border-t">
             <div className="flex items-start gap-3">
               <Checkbox
-                id="confirmTruth"
+                id="confirm_truth"
                 checked={confirmTruth === 'Yes'}
-                onCheckedChange={(checked) => setValue('confirmTruth', checked ? 'Yes' : '')}
-                data-testid="checkbox-confirmTruth"
+                onCheckedChange={(checked) => setValue('confirm_truth', checked ? 'Yes' : '')}
+                data-testid="checkbox-confirm_truth"
               />
-              <Label htmlFor="confirmTruth" className="text-sm font-normal cursor-pointer">
+              <Label htmlFor="confirm_truth" className="text-sm font-normal cursor-pointer">
                 I confirm that all information provided is truthful and accurate *
               </Label>
             </div>
-            {errors.confirmTruth && <p className="text-sm text-destructive ml-7">You must confirm this declaration</p>}
+            {errors.confirm_truth && <p className="text-sm text-destructive ml-7">You must confirm this declaration</p>}
 
             <div className="flex items-start gap-3">
               <Checkbox
-                id="agreePolicies"
+                id="agree_policies"
                 checked={agreePolicies === 'Yes'}
-                onCheckedChange={(checked) => setValue('agreePolicies', checked ? 'Yes' : '')}
-                data-testid="checkbox-agreePolicies"
+                onCheckedChange={(checked) => setValue('agree_policies', checked ? 'Yes' : '')}
+                data-testid="checkbox-agree_policies"
               />
-              <Label htmlFor="agreePolicies" className="text-sm font-normal cursor-pointer">
+              <Label htmlFor="agree_policies" className="text-sm font-normal cursor-pointer">
                 I agree to abide by the school's policies, code of conduct, and admission requirements *
               </Label>
             </div>
-            {errors.agreePolicies && <p className="text-sm text-destructive ml-7">You must agree to the policies</p>}
+            {errors.agree_policies && <p className="text-sm text-destructive ml-7">You must agree to the policies</p>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
             <div className="space-y-2">
-              <Label htmlFor="digitalSignature">Digital Signature (Full Name) *</Label>
+              <Label htmlFor="digital_signature">Digital Signature (Full Name) *</Label>
               <Input
-                id="digitalSignature"
-                {...register('digitalSignature', { required: true })}
+                id="digital_signature"
+                {...register('digital_signature', { required: true })}
                 placeholder="Type your full name"
-                data-testid="input-digitalSignature"
+                data-testid="input-digital_signature"
               />
-              {errors.digitalSignature && <p className="text-sm text-destructive">Digital signature is required</p>}
+              {errors.digital_signature && <p className="text-sm text-destructive">Digital signature is required</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="submissionDate">Date *</Label>
+              <Label htmlFor="submission_date">Date *</Label>
               <Input
-                id="submissionDate"
+                id="submission_date"
                 type="date"
-                {...register('submissionDate', { required: true })}
-                data-testid="input-submissionDate"
+                {...register('submission_date', { required: true })}
+                data-testid="input-submission_date"
               />
-              {errors.submissionDate && <p className="text-sm text-destructive">Date is required</p>}
+              {errors.submission_date && <p className="text-sm text-destructive">Date is required</p>}
             </div>
           </div>
         </CardContent>

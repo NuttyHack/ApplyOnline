@@ -12,9 +12,9 @@ interface Step2Props {
 
 export function Step2Academic({ form }: Step2Props) {
   const { register, watch, setValue, formState: { errors } } = form;
-  const gradeApplying = watch('gradeApplying');
-  const hasDisciplineHistory = watch('hasDisciplineHistory');
-  const hasTeacherRelative = watch('hasTeacherRelative');
+  const gradeApplying = watch('grade_applying');
+  const hasDisciplineHistory = watch('has_discipline_history');
+  const hasTeacherRelative = watch('has_teacher_relative');
 
   const getSubjectsForGrade = (grade: string) => {
     const gradeNum = parseInt(grade);
@@ -38,17 +38,17 @@ export function Step2Academic({ form }: Step2Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="preferredStartYear">Preferred Start Year</Label>
-            <Input id="preferredStartYear" type="number" placeholder="2027" {...register('preferredStartYear', { valueAsNumber: true })} data-testid="input-preferredStartYear" />
+            <Label htmlFor="preferred_start_year">Preferred Start Year</Label>
+            <Input id="preferred_start_year" type="number" placeholder="2027" {...register('preferred_start_year', { valueAsNumber: true })} data-testid="input-preferred_start_year" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="gradeApplying">Grade Applying For *</Label>
+            <Label htmlFor="grade_applying">Grade Applying For *</Label>
             <Select
               value={gradeApplying}
-              onValueChange={(value) => setValue('gradeApplying', value)}
+              onValueChange={(value) => setValue('grade_applying', value)}
             >
-              <SelectTrigger id="gradeApplying" data-testid="select-gradeApplying">
+              <SelectTrigger id="grade_applying" data-testid="select-grade_applying">
                 <SelectValue placeholder="Select grade" />
               </SelectTrigger>
               <SelectContent>
@@ -59,17 +59,17 @@ export function Step2Academic({ form }: Step2Props) {
                 <SelectItem value="12">Grade 12</SelectItem>
               </SelectContent>
             </Select>
-            {errors.gradeApplying && <p className="text-sm text-destructive">Grade is required</p>}
+            {errors.grade_applying && <p className="text-sm text-destructive">Grade is required</p>}
           </div>
 
           {gradeApplying && parseInt(gradeApplying) >= 10 && (
             <div className="space-y-2">
-              <Label htmlFor="chosenStream">Chosen Stream (Grade 10-12)</Label>
+              <Label htmlFor="chosen_stream">Chosen Stream (Grade 10-12)</Label>
               <Select
-                value={watch('chosenStream') || ''}
-                onValueChange={(value) => setValue('chosenStream', value)}
+                value={watch('chosen_stream') || ''}
+                onValueChange={(value) => setValue('chosen_stream', value)}
               >
-                <SelectTrigger id="chosenStream" data-testid="select-chosenStream">
+                <SelectTrigger id="chosen_stream" data-testid="select-chosen_stream">
                   <SelectValue placeholder="Select stream" />
                 </SelectTrigger>
                 <SelectContent>
@@ -81,23 +81,23 @@ export function Step2Academic({ form }: Step2Props) {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="gradePassed">Highest Grade Passed</Label>
-            <Input id="gradePassed" {...register('gradePassed')} data-testid="input-gradePassed" />
+            <Label htmlFor="grade_passed">Highest Grade Passed</Label>
+            <Input id="grade_passed" {...register('grade_passed')} data-testid="input-grade_passed" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="yearPassedHighest">Year Passed Highest Grade</Label>
-            <Input id="yearPassedHighest" type="number" {...register('yearPassedHighest', { valueAsNumber: true })} data-testid="input-yearPassedHighest" />
+            <Label htmlFor="year_passed_highest">Year Passed Highest Grade</Label>
+            <Input id="year_passed_highest" type="number" {...register('year_passed_highest', { valueAsNumber: true })} data-testid="input-year_passed_highest" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="currentGrade">Current Grade</Label>
-            <Input id="currentGrade" {...register('currentGrade')} data-testid="input-currentGrade" />
+            <Label htmlFor="current_grade">Current Grade</Label>
+            <Input id="current_grade" {...register('current_grade')} data-testid="input-current_grade" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="currentAcademicYear">Current Academic Year</Label>
-            <Input id="currentAcademicYear" type="number" {...register('currentAcademicYear', { valueAsNumber: true })} data-testid="input-currentAcademicYear" />
+            <Label htmlFor="current_academic_year">Current Academic Year</Label>
+            <Input id="current_academic_year" type="number" {...register('current_academic_year', { valueAsNumber: true })} data-testid="input-current_academic_year" />
           </div>
         </CardContent>
       </Card>
@@ -125,26 +125,26 @@ export function Step2Academic({ form }: Step2Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="prevSchoolName">Previous School Name *</Label>
-            <Input id="prevSchoolName" {...register('prevSchoolName', { required: true })} data-testid="input-prevSchoolName" />
-            {errors.prevSchoolName && <p className="text-sm text-destructive">Previous school name is required</p>}
+            <Label htmlFor="prev_school_name">Previous School Name *</Label>
+            <Input id="prev_school_name" {...register('prev_school_name', { required: true })} data-testid="input-prev_school_name" />
+            {errors.prev_school_name && <p className="text-sm text-destructive">Previous school name is required</p>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="prevSchoolAddress">Previous School Address</Label>
-              <Input id="prevSchoolAddress" {...register('prevSchoolAddress')} data-testid="input-prevSchoolAddress" />
+              <Label htmlFor="prev_school_address">Previous School Address</Label>
+              <Input id="prev_school_address" {...register('prev_school_address')} data-testid="input-prev_school_address" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="prevSchoolPhone">Previous School Phone</Label>
-              <Input id="prevSchoolPhone" {...register('prevSchoolPhone')} data-testid="input-prevSchoolPhone" />
+              <Label htmlFor="prev_school_phone">Previous School Phone</Label>
+              <Input id="prev_school_phone" {...register('prev_school_phone')} data-testid="input-prev_school_phone" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reasonLeaving">Reason for Leaving</Label>
-            <Textarea id="reasonLeaving" {...register('reasonLeaving')} rows={2} data-testid="textarea-reasonLeaving" />
+            <Label htmlFor="reason_leaving">Reason for Leaving</Label>
+            <Textarea id="reason_leaving" {...register('reason_leaving')} rows={2} data-testid="textarea-reason_leaving" />
           </div>
         </CardContent>
       </Card>
@@ -156,37 +156,37 @@ export function Step2Academic({ form }: Step2Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="averagePercentage">Average Percentage</Label>
-            <Input id="averagePercentage" {...register('averagePercentage')} data-testid="input-averagePercentage" />
+            <Label htmlFor="average_percentage">Average Percentage</Label>
+            <Input id="average_percentage" {...register('average_percentage')} data-testid="input-average_percentage" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="numSubjectsPassed">Number of Subjects Passed</Label>
-            <Input id="numSubjectsPassed" type="number" {...register('numSubjectsPassed', { valueAsNumber: true })} data-testid="input-numSubjectsPassed" />
+            <Label htmlFor="num_subjects_passed">Number of Subjects Passed</Label>
+            <Input id="num_subjects_passed" type="number" {...register('num_subjects_passed', { valueAsNumber: true })} data-testid="input-num_subjects_passed" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bestSubject">Best Subject</Label>
-            <Input id="bestSubject" {...register('bestSubject')} data-testid="input-bestSubject" />
+            <Label htmlFor="best_subject">Best Subject</Label>
+            <Input id="best_subject" {...register('best_subject')} data-testid="input-best_subject" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="weakestSubject">Weakest Subject</Label>
-            <Input id="weakestSubject" {...register('weakestSubject')} data-testid="input-weakestSubject" />
+            <Label htmlFor="weakest_subject">Weakest Subject</Label>
+            <Input id="weakest_subject" {...register('weakest_subject')} data-testid="input-weakest_subject" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="optionalSubject">Optional Subject Interest</Label>
-            <Input id="optionalSubject" {...register('optionalSubject')} data-testid="input-optionalSubject" />
+            <Label htmlFor="optional_subject">Optional Subject Interest</Label>
+            <Input id="optional_subject" {...register('optional_subject')} data-testid="input-optional_subject" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="needsSupport">Needs Academic Support?</Label>
+            <Label htmlFor="needs_support">Needs Academic Support?</Label>
             <Select
-              value={watch('needsSupport') || ''}
-              onValueChange={(value) => setValue('needsSupport', value)}
+              value={watch('needs_support') || ''}
+              onValueChange={(value) => setValue('needs_support', value)}
             >
-              <SelectTrigger id="needsSupport" data-testid="select-needsSupport">
+              <SelectTrigger id="needs_support" data-testid="select-needs_support">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -197,8 +197,8 @@ export function Step2Academic({ form }: Step2Props) {
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="needsExtraLessons">Subjects Needing Extra Lessons</Label>
-            <Input id="needsExtraLessons" {...register('needsExtraLessons')} placeholder="e.g., Mathematics, Science" data-testid="input-needsExtraLessons" />
+            <Label htmlFor="needs_extra_lessons">Subjects Needing Extra Lessons</Label>
+            <Input id="needs_extra_lessons" {...register('needs_extra_lessons')} placeholder="e.g., Mathematics, Science" data-testid="input-needs_extra_lessons" />
           </div>
         </CardContent>
       </Card>
@@ -215,13 +215,13 @@ export function Step2Academic({ form }: Step2Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sportsParticipation">Sports Participation</Label>
-            <Textarea id="sportsParticipation" {...register('sportsParticipation')} rows={2} placeholder="List sports and teams" data-testid="textarea-sportsParticipation" />
+            <Label htmlFor="sports_participation">Sports Participation</Label>
+            <Textarea id="sports_participation" {...register('sports_participation')} rows={2} placeholder="List sports and teams" data-testid="textarea-sports_participation" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="leadershipRoles">Leadership Roles</Label>
-            <Textarea id="leadershipRoles" {...register('leadershipRoles')} rows={2} placeholder="Prefect, class representative, club leader, etc." data-testid="textarea-leadershipRoles" />
+            <Label htmlFor="leadership_roles">Leadership Roles</Label>
+            <Textarea id="leadership_roles" {...register('leadership_roles')} rows={2} placeholder="Prefect, class representative, club leader, etc." data-testid="textarea-leadership_roles" />
           </div>
 
           <div className="space-y-2">
@@ -238,12 +238,12 @@ export function Step2Academic({ form }: Step2Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="hasDisciplineHistory">Any Disciplinary Issues?</Label>
+            <Label htmlFor="has_discipline_history">Any Disciplinary Issues?</Label>
             <Select
               value={hasDisciplineHistory || ''}
-              onValueChange={(value) => setValue('hasDisciplineHistory', value)}
+              onValueChange={(value) => setValue('has_discipline_history', value)}
             >
-              <SelectTrigger id="hasDisciplineHistory" data-testid="select-hasDisciplineHistory">
+              <SelectTrigger id="has_discipline_history" data-testid="select-has_discipline_history">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -255,8 +255,8 @@ export function Step2Academic({ form }: Step2Props) {
 
           {hasDisciplineHistory === 'Yes' && (
             <div className="space-y-2">
-              <Label htmlFor="disciplineDetails">Please Provide Details</Label>
-              <Textarea id="disciplineDetails" {...register('disciplineDetails')} rows={3} data-testid="textarea-disciplineDetails" />
+              <Label htmlFor="discipline_details">Please Provide Details</Label>
+              <Textarea id="discipline_details" {...register('discipline_details')} rows={3} data-testid="textarea-discipline_details" />
             </div>
           )}
         </CardContent>
@@ -269,18 +269,18 @@ export function Step2Academic({ form }: Step2Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="motivationToJoin">Motivation for Applying *</Label>
-            <Textarea id="motivationToJoin" {...register('motivationToJoin', { required: true })} rows={4} placeholder="Tell us why you want to join Hoye Secondary School" data-testid="textarea-motivationToJoin" />
-            {errors.motivationToJoin && <p className="text-sm text-destructive">This field is required</p>}
+            <Label htmlFor="motivation_to_join">Motivation for Applying *</Label>
+            <Textarea id="motivation_to_join" {...register('motivation_to_join', { required: true })} rows={4} placeholder="Tell us why you want to join Hoye Secondary School" data-testid="textarea-motivation_to_join" />
+            {errors.motivation_to_join && <p className="text-sm text-destructive">This field is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="referralSource">How Did You Hear About Us? *</Label>
+            <Label htmlFor="referral_source">How Did You Hear About Us? *</Label>
             <Select
-              value={watch('referralSource')}
-              onValueChange={(value) => setValue('referralSource', value)}
+              value={watch('referral_source')}
+              onValueChange={(value) => setValue('referral_source', value)}
             >
-              <SelectTrigger id="referralSource" data-testid="select-referralSource">
+              <SelectTrigger id="referral_source" data-testid="select-referral_source">
                 <SelectValue placeholder="Select source" />
               </SelectTrigger>
               <SelectContent>
@@ -301,7 +301,7 @@ export function Step2Academic({ form }: Step2Props) {
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
-            {errors.referralSource && <p className="text-sm text-destructive">This field is required</p>}
+            {errors.referral_source && <p className="text-sm text-destructive">This field is required</p>}
           </div>
         </CardContent>
       </Card>
@@ -313,12 +313,12 @@ export function Step2Academic({ form }: Step2Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="hasTeacherRelative">Do You Have a Relative Teaching at Hoye?</Label>
+            <Label htmlFor="has_teacher_relative">Do You Have a Relative Teaching at Hoye?</Label>
             <Select
               value={hasTeacherRelative || ''}
-              onValueChange={(value) => setValue('hasTeacherRelative', value)}
+              onValueChange={(value) => setValue('has_teacher_relative', value)}
             >
-              <SelectTrigger id="hasTeacherRelative" data-testid="select-hasTeacherRelative">
+              <SelectTrigger id="has_teacher_relative" data-testid="select-has_teacher_relative">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -331,23 +331,23 @@ export function Step2Academic({ form }: Step2Props) {
           {hasTeacherRelative === 'Yes' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="teacherName">Teacher First Name</Label>
-                <Input id="teacherName" {...register('teacherName')} data-testid="input-teacherName" />
+                <Label htmlFor="teacher_name">Teacher First Name</Label>
+                <Input id="teacher_name" {...register('teacher_name')} data-testid="input-teacher_name" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="teacherSurname">Teacher Surname</Label>
-                <Input id="teacherSurname" {...register('teacherSurname')} data-testid="input-teacherSurname" />
+                <Label htmlFor="teacher_surname">Teacher Surname</Label>
+                <Input id="teacher_surname" {...register('teacher_surname')} data-testid="input-teacher_surname" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="teacherPhone">Teacher Phone</Label>
-                <Input id="teacherPhone" {...register('teacherPhone')} data-testid="input-teacherPhone" />
+                <Label htmlFor="teacher_phone">Teacher Phone</Label>
+                <Input id="teacher_phone" {...register('teacher_phone')} data-testid="input-teacher_phone" />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="teacherRelationship">Relationship to Teacher</Label>
-                <Input id="teacherRelationship" {...register('teacherRelationship')} placeholder="e.g., aunt, uncle, cousin" data-testid="input-teacherRelationship" />
+                <Label htmlFor="teacher_relationship">Relationship to Teacher</Label>
+                <Input id="teacher_relationship" {...register('teacher_relationship')} placeholder="e.g., aunt, uncle, cousin" data-testid="input-teacher_relationship" />
               </div>
             </div>
           )}

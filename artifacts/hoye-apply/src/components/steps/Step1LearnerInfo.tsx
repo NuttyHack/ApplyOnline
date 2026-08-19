@@ -1,18 +1,17 @@
 import { UseFormReturn } from 'react-hook-form';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { ApplicationInput } from '@workspace/api-client-react';
 
 interface Step1Props {
-  form: UseFormReturn<ApplicationInput>;
+  form: UseFormReturn<any>;
 }
 
 export function Step1LearnerInfo({ form }: Step1Props) {
   const { register, watch, setValue, formState: { errors } } = form;
-  const siblingsAtSchool = watch('siblingsAtSchool');
+  const siblingsAtSchool = watch('siblings_at_school');
 
   return (
     <div className="space-y-6">
@@ -28,36 +27,36 @@ export function Step1LearnerInfo({ form }: Step1Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="firstName">First Name *</Label>
-            <Input id="firstName" {...register('firstName', { required: true })} data-testid="input-firstName" />
-            {errors.firstName && <p className="text-sm text-destructive">First name is required</p>}
+            <Label htmlFor="first_name">First Name *</Label>
+            <Input id="first_name" {...register('first_name', { required: true })} data-testid="input-first_name" />
+            {errors.first_name && <p className="text-sm text-destructive">First name is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name *</Label>
-            <Input id="lastName" {...register('lastName', { required: true })} data-testid="input-lastName" />
-            {errors.lastName && <p className="text-sm text-destructive">Last name is required</p>}
+            <Label htmlFor="last_name">Last Name *</Label>
+            <Input id="last_name" {...register('last_name', { required: true })} data-testid="input-last_name" />
+            {errors.last_name && <p className="text-sm text-destructive">Last name is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="middleName">Middle Name</Label>
-            <Input id="middleName" {...register('middleName')} data-testid="input-middleName" />
+            <Label htmlFor="middle_name">Middle Name</Label>
+            <Input id="middle_name" {...register('middle_name')} data-testid="input-middle_name" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="preferredName">Preferred Name</Label>
-            <Input id="preferredName" {...register('preferredName')} data-testid="input-preferredName" />
+            <Label htmlFor="preferred_name">Preferred Name</Label>
+            <Input id="preferred_name" {...register('preferred_name')} data-testid="input-preferred_name" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="idNumber">ID Number *</Label>
-            <Input id="idNumber" {...register('idNumber', { required: true })} data-testid="input-idNumber" />
-            {errors.idNumber && <p className="text-sm text-destructive">ID number is required</p>}
+            <Label htmlFor="id_number">ID Number *</Label>
+            <Input id="id_number" {...register('id_number', { required: true })} data-testid="input-id_number" />
+            {errors.id_number && <p className="text-sm text-destructive">ID number is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="birthCertNumber">Birth Certificate Number</Label>
-            <Input id="birthCertNumber" {...register('birthCertNumber')} data-testid="input-birthCertNumber" />
+            <Label htmlFor="birth_cert_number">Birth Certificate Number</Label>
+            <Input id="birth_cert_number" {...register('birth_cert_number')} data-testid="input-birth_cert_number" />
           </div>
 
           <div className="space-y-2">
@@ -75,7 +74,7 @@ export function Step1LearnerInfo({ form }: Step1Props) {
             <Label htmlFor="gender">Gender *</Label>
             <Select
               value={watch('gender')}
-              onValueChange={(value) => setValue('gender', value as 'Male' | 'Female')}
+              onValueChange={(value) => setValue('gender', value)}
             >
               <SelectTrigger id="gender" data-testid="select-gender">
                 <SelectValue placeholder="Select gender" />
@@ -100,8 +99,8 @@ export function Step1LearnerInfo({ form }: Step1Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="countryOfBirth">Country of Birth</Label>
-            <Input id="countryOfBirth" {...register('countryOfBirth')} data-testid="input-countryOfBirth" />
+            <Label htmlFor="country_of_birth">Country of Birth</Label>
+            <Input id="country_of_birth" {...register('country_of_birth')} data-testid="input-country_of_birth" />
           </div>
         </CardContent>
       </Card>
@@ -113,23 +112,23 @@ export function Step1LearnerInfo({ form }: Step1Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="homeLanguage">Home Language *</Label>
-            <Input id="homeLanguage" {...register('homeLanguage', { required: true })} data-testid="input-homeLanguage" />
-            {errors.homeLanguage && <p className="text-sm text-destructive">Home language is required</p>}
+            <Label htmlFor="home_language">Home Language *</Label>
+            <Input id="home_language" {...register('home_language', { required: true })} data-testid="input-home_language" />
+            {errors.home_language && <p className="text-sm text-destructive">Home language is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="secondLanguage">Second Language</Label>
-            <Input id="secondLanguage" {...register('secondLanguage')} data-testid="input-secondLanguage" />
+            <Label htmlFor="second_language">Second Language</Label>
+            <Input id="second_language" {...register('second_language')} data-testid="input-second_language" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="learningLanguage">Language of Learning</Label>
+            <Label htmlFor="learning_language">Language of Learning</Label>
             <Select
-              value={watch('learningLanguage') || ''}
-              onValueChange={(value) => setValue('learningLanguage', value)}
+              value={watch('learning_language') || ''}
+              onValueChange={(value) => setValue('learning_language', value)}
             >
-              <SelectTrigger id="learningLanguage" data-testid="select-learningLanguage">
+              <SelectTrigger id="learning_language" data-testid="select-learning_language">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
@@ -158,8 +157,8 @@ export function Step1LearnerInfo({ form }: Step1Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="mobileNumber">Mobile Number</Label>
-            <Input id="mobileNumber" {...register('mobileNumber')} data-testid="input-mobileNumber" />
+            <Label htmlFor="mobile_number">Mobile Number</Label>
+            <Input id="mobile_number" {...register('mobile_number')} data-testid="input-mobile_number" />
           </div>
 
           <div className="space-y-2">
@@ -176,9 +175,9 @@ export function Step1LearnerInfo({ form }: Step1Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="residentialAddress">Address *</Label>
-            <Textarea id="residentialAddress" {...register('residentialAddress', { required: true })} rows={3} data-testid="textarea-residentialAddress" />
-            {errors.residentialAddress && <p className="text-sm text-destructive">Residential address is required</p>}
+            <Label htmlFor="residential_address">Address *</Label>
+            <Textarea id="residential_address" {...register('residential_address', { required: true })} rows={3} data-testid="textarea-residential_address" />
+            {errors.residential_address && <p className="text-sm text-destructive">Residential address is required</p>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -195,8 +194,8 @@ export function Step1LearnerInfo({ form }: Step1Props) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="postalCode">Postal Code</Label>
-              <Input id="postalCode" {...register('postalCode')} data-testid="input-postalCode" />
+              <Label htmlFor="postal_code">Postal Code</Label>
+              <Input id="postal_code" {...register('postal_code')} data-testid="input-postal_code" />
             </div>
 
             <div className="space-y-2">
@@ -215,12 +214,12 @@ export function Step1LearnerInfo({ form }: Step1Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="livesWith">Lives With</Label>
+            <Label htmlFor="lives_with">Lives With</Label>
             <Select
-              value={watch('livesWith') || ''}
-              onValueChange={(value) => setValue('livesWith', value)}
+              value={watch('lives_with') || ''}
+              onValueChange={(value) => setValue('lives_with', value)}
             >
-              <SelectTrigger id="livesWith" data-testid="select-livesWith">
+              <SelectTrigger id="lives_with" data-testid="select-lives_with">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -235,17 +234,17 @@ export function Step1LearnerInfo({ form }: Step1Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="totalSiblings">Total Number of Siblings</Label>
-            <Input id="totalSiblings" type="number" {...register('totalSiblings', { valueAsNumber: true })} data-testid="input-totalSiblings" />
+            <Label htmlFor="total_siblings">Total Number of Siblings</Label>
+            <Input id="total_siblings" type="number" {...register('total_siblings', { valueAsNumber: true })} data-testid="input-total_siblings" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="familyPosition">Position in Family</Label>
+            <Label htmlFor="family_position">Position in Family</Label>
             <Select
-              value={watch('familyPosition') || ''}
-              onValueChange={(value) => setValue('familyPosition', value)}
+              value={watch('family_position') || ''}
+              onValueChange={(value) => setValue('family_position', value)}
             >
-              <SelectTrigger id="familyPosition" data-testid="select-familyPosition">
+              <SelectTrigger id="family_position" data-testid="select-family_position">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -258,12 +257,12 @@ export function Step1LearnerInfo({ form }: Step1Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="siblingsAtSchool">Any Siblings at Hoye?</Label>
+            <Label htmlFor="siblings_at_school">Any Siblings at Hoye?</Label>
             <Select
               value={siblingsAtSchool || ''}
-              onValueChange={(value) => setValue('siblingsAtSchool', value)}
+              onValueChange={(value) => setValue('siblings_at_school', value)}
             >
-              <SelectTrigger id="siblingsAtSchool" data-testid="select-siblingsAtSchool">
+              <SelectTrigger id="siblings_at_school" data-testid="select-siblings_at_school">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
