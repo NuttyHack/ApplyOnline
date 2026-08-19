@@ -24,7 +24,7 @@ export default function Home() {
           <Link href="/" className="flex items-center gap-3.5 group cursor-pointer">
             <div className="w-11 h-11 rounded-2xl bg-sky-50 border border-sky-200/60 p-1.5 flex items-center justify-center shadow-xs group-hover:border-sky-400 group-hover:bg-sky-100/60 transition-all duration-300">
               <img 
-                src="/school.jpg" 
+                src="public/school.jpg" 
                 alt="Hoye Secondary School Logo" 
                 className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" 
                 onError={(e) => {
