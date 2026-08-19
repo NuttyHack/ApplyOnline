@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, ArrowRight, CheckCircle2, Loader2, School } from 'lucide-react';
 import { StepIndicator } from '@/components/StepIndicator';
 import { SuccessModal } from '@/components/SuccessModal';
 import type { ApplicationInput } from '@workspace/api-client-react';
@@ -38,7 +38,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
 
   const form = useForm<ApplicationInput>({
     defaultValues: {
-      // Step 1 defaults
       firstName: '',
       lastName: '',
       middleName: '',
@@ -66,7 +65,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       totalSiblings: undefined,
       familyPosition: '',
       siblingsAtSchool: '',
-      // Step 2 defaults
       preferredStartYear: 2027,
       gradePassed: '',
       yearPassedHighest: undefined,
@@ -98,7 +96,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       teacherSurname: '',
       teacherPhone: '',
       teacherRelationship: '',
-      // Step 3 defaults
       hasMedicalAid: '',
       medAidProvider: '',
       medAidNumber: '',
@@ -119,7 +116,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       needsCounselling: '',
       sportsAllowed: '',
       allowEmergencyTreatment: '',
-      // Step 4 defaults
       guardianFirstName: '',
       guardianLastName: '',
       guardianId: '',
@@ -139,7 +135,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       guardian2Name: '',
       guardian2Phone: '',
       permissionPhotos: '',
-      // Step 5 defaults
       confirmTruth: '',
       agreePolicies: '',
       digitalSignature: '',
@@ -148,7 +143,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     },
   });
 
-  // Apply SKAVS extracted data into the form when provided
   useEffect(() => {
     if (!extractedData) return;
     const fieldMap: Partial<Record<keyof ApplicationInput, string | undefined>> = {
@@ -214,11 +208,27 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
+  // Guard 1: Intercept Enter keypresses on steps 1-4 to trigger next step rather than submission
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter' && currentStep < 5 && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      handleNext();
+    }
+  };
+
+  // Guard 2: Enforce that form submission ONLY executes on Step 5
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (currentStep < 5) {
+      handleNext();
+      return;
+    }
+    form.handleSubmit(onSubmit)(e);
+  };
+
   const onSubmit = async (data: ApplicationInput) => {
     try {
       const formData = new FormData();
-
-      // Combine form submit data with full form state to prevent omitted fields
       const allFields = { ...form.getValues(), ...data };
 
       // Append values to FormData payload
@@ -234,7 +244,7 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         }
       });
 
-      // Label formatter
+      // Label & Value formatting helpers
       const formatLabel = (key: string) =>
         key
           .replace(/_/g, ' ')
@@ -242,7 +252,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
           .replace(/^./, (str) => str.toUpperCase())
           .trim();
 
-      // Value cleaner: explicitly cleans NaN and handles files
       const cleanValue = (val: any): string => {
         if (val === null || val === undefined) return '';
         if (typeof val === 'number' && Number.isNaN(val)) return '';
@@ -253,40 +262,151 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         return String(val);
       };
 
-      // Construct table rows for ALL applicant fields
-      const tableRows: [string, string][] = Object.entries(allFields).map(([key, val]) => [
-        formatLabel(key),
-        cleanValue(val),
-      ]);
-
-      // Generate full direct PDF document
+      // --- MODERN EXECUTIVE GENERATED PDF FOR ADMIN ---
       const doc = new jsPDF();
+      const primaryColor: [number, number, number] = [30, 58, 138];    // Executive Deep Navy
+      const secondaryColor: [number, number, number] = [71, 85, 105];  // Slate Blue
+      const lightBg: [number, number, number] = [248, 250, 252];       // Off-White
 
-      doc.setFontSize(16);
-      doc.setTextColor(30, 64, 175);
-      doc.text("HOYE SECONDARY SCHOOL", 105, 15, { align: "center" });
+      // 1. Header Banner
+      doc.setFillColor(...primaryColor);
+      doc.rect(0, 0, 210, 28, 'F');
 
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.setTextColor(255, 255, 255);
+      doc.text('HOYE SECONDARY SCHOOL', 14, 15);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(226, 232, 240);
+      doc.text('OFFICIAL ADMISSION APPLICATION RECORD', 14, 22);
+
+      // Metadata Timestamp
+      const today = new Date().toLocaleDateString('en-ZA');
+      doc.setFontSize(8);
+      doc.text(`Submitted: ${today}`, 196, 15, { align: 'right' });
+      doc.text('Status: Pending Review', 196, 22, { align: 'right' });
+
+      // 2. Applicant Overview Summary Card
+      doc.setFillColor(...lightBg);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
+
+      doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
-      doc.setTextColor(37, 99, 235);
-      doc.text("OFFICIAL ADMISSION APPLICATION RECORD", 105, 21, { align: "center" });
+      doc.setTextColor(...primaryColor);
+      const fullName = `${allFields.firstName || ''} ${allFields.lastName || ''}`.trim() || 'N/A';
+      doc.text(`Applicant Name: ${fullName}`, 18, 41);
 
-      autoTable(doc, {
-        startY: 26,
-        head: [['Application Field', 'Applicant Details']],
-        body: tableRows,
-        theme: 'striped',
-        headStyles: { fillColor: [30, 64, 175], textColor: [255, 255, 255], fontStyle: 'bold' },
-        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
-        columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 65, textColor: [71, 85, 105] },
-          1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...secondaryColor);
+      doc.text(`ID / Passport: ${allFields.idNumber || 'N/A'}`, 18, 49);
+      doc.text(`Grade Applying: ${allFields.gradeApplying || 'N/A'}`, 110, 41);
+      doc.text(`Start Year: ${allFields.preferredStartYear || '2027'}`, 110, 49);
+
+      // 3. Categorized Sections
+      const sections = [
+        {
+          title: '1. Learner Personal Details',
+          keys: [
+            'firstName', 'middleName', 'lastName', 'preferredName', 'idNumber',
+            'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
+            'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
+            'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
+            'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
+            'familyPosition', 'siblingsAtSchool'
+          ]
         },
+        {
+          title: '2. Academic History & Preferences',
+          keys: [
+            'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
+            'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
+            'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
+            'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
+            'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
+            'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
+            'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
+            'teacherSurname', 'teacherPhone', 'teacherRelationship'
+          ]
+        },
+        {
+          title: '3. Medical & Support Information',
+          keys: [
+            'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
+            'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
+            'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
+            'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
+            'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
+            'allowEmergencyTreatment'
+          ]
+        },
+        {
+          title: '4. Parent / Guardian Details',
+          keys: [
+            'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
+            'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
+            'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
+            'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
+            'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
+            'guardian2Phone', 'permissionPhotos'
+          ]
+        },
+        {
+          title: '5. Declaration & Signature',
+          keys: [
+            'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
+            'additionalNotes'
+          ]
+        }
+      ];
+
+      let currentY = 60;
+
+      sections.forEach((sec) => {
+        const rows = sec.keys
+          .map((k) => {
+            const val = cleanValue(allFields[k as keyof typeof allFields]);
+            return val ? [formatLabel(k), val] : null;
+          })
+          .filter((row): row is [string, string] => row !== null);
+
+        if (rows.length === 0) return;
+
+        autoTable(doc, {
+          startY: currentY,
+          head: [[sec.title, 'Details']],
+          body: rows,
+          theme: 'grid',
+          headStyles: {
+            fillColor: primaryColor,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 9,
+          },
+          styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+          columnStyles: {
+            0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
+            1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+          },
+          margin: { left: 14, right: 14 },
+          didDrawPage: () => {
+            const pageStr = `Page ${doc.getNumberOfPages()}`;
+            doc.setFontSize(7.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text(pageStr, 196, 287, { align: 'right' });
+            doc.text('Hoye Secondary School — Official Confidential Admission Record', 14, 287);
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
       });
 
       const pdfBlob = doc.output('blob');
       formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
 
-      // Submit payload to endpoint
       const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
         method: 'POST',
         body: formData,
@@ -316,22 +436,22 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
   };
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
-      {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm">
-        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-background via-muted/20 to-muted/40">
+      {/* Glassmorphic Header */}
+      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-md">
+        <div className="container max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-accent font-bold text-lg">H</span>
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-sm">
+              <School className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-foreground">Hoye Secondary School</h1>
-              <p className="text-xs text-muted-foreground">Online Admissions Application</p>
+              <h1 className="text-base font-bold tracking-tight text-foreground">Hoye Secondary School</h1>
+              <p className="text-xs text-muted-foreground font-medium">Online Admissions Application</p>
             </div>
           </div>
           <Link href="/">
-            <Button variant="outline" size="sm" data-testid="button-back-home">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <Button variant="ghost" size="sm" className="rounded-xl hover:bg-muted font-medium text-xs gap-2" data-testid="button-back-home">
+              <ArrowLeft className="h-3.5 w-3.5" />
               Back to Home
             </Button>
           </Link>
@@ -342,72 +462,106 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       <AnimatePresence>
         {showSkavsNotice && (
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            className="bg-yellow-50 border-b border-yellow-200 px-4 py-2.5"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-3"
           >
             <div className="container max-w-6xl mx-auto flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm text-yellow-800">
-                <Sparkles className="w-4 h-4 text-yellow-600 shrink-0" />
-                <span><strong>SKAVS</strong> has pre-filled some fields from your document. Please review and correct any details before submitting.</span>
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                <span><strong className="font-semibold">SKAVS AI Autofill:</strong> We pre-filled fields from your document. Please review for accuracy.</span>
               </div>
-              <button onClick={() => setShowSkavsNotice(false)} className="text-yellow-600 hover:text-yellow-800 text-xs font-medium shrink-0">Dismiss</button>
+              <button 
+                type="button"
+                onClick={() => setShowSkavsNotice(false)} 
+                className="text-amber-700 dark:text-amber-300 hover:text-amber-900 text-xs font-semibold shrink-0 transition-colors"
+              >
+                Dismiss
+              </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Step Indicator */}
-      <StepIndicator steps={steps} currentStep={currentStep} />
+      {/* Main Content Container */}
+      <main className="container max-w-4xl mx-auto px-4 py-8 space-y-8">
+        {/* Step Indicator Card */}
+        <div className="bg-card/70 backdrop-blur-md border border-border/50 rounded-2xl p-6 shadow-sm">
+          <StepIndicator steps={steps} currentStep={currentStep} />
+        </div>
 
-      {/* Form */}
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {currentStep === 1 && <Step1LearnerInfo form={form} />}
-              {currentStep === 2 && <Step2Academic form={form} />}
-              {currentStep === 3 && <Step3Medical form={form} />}
-              {currentStep === 4 && <Step4Guardian form={form} />}
-              {currentStep === 5 && <Step5Submit form={form} />}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation */}
-          <div className="flex justify-between mt-8 pb-12">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              data-testid="button-back"
-            >
-              Back
-            </Button>
-            
-            {currentStep < 5 ? (
-              <Button type="button" onClick={handleNext} data-testid="button-next">
-                Next Step
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-                data-testid="button-submit-application"
+        {/* Floating Modern Form Container */}
+        <div className="bg-card border border-border/60 rounded-3xl p-6 sm:p-10 shadow-xl shadow-black/5">
+          <form onSubmit={handleFormSubmit} onKeyDown={handleKeyDown}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
               >
-                {form.formState.isSubmitting ? 'Submitting...' : 'Submit Application'}
+                {currentStep === 1 && <Step1LearnerInfo form={form} />}
+                {currentStep === 2 && <Step2Academic form={form} />}
+                {currentStep === 3 && <Step3Medical form={form} />}
+                {currentStep === 4 && <Step4Guardian form={form} />}
+                {currentStep === 5 && <Step5Submit form={form} />}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Modern Action Bar */}
+            <div className="flex items-center justify-between mt-10 pt-6 border-t border-border/50 gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBack}
+                disabled={currentStep === 1}
+                className="h-11 px-6 rounded-xl font-medium border-border/80 hover:bg-muted transition-all"
+                data-testid="button-back"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
               </Button>
-            )}
-          </div>
-        </form>
-      </div>
+
+              <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wider hidden sm:block">
+                Step {currentStep} of {steps.length}
+              </div>
+
+              {currentStep < 5 ? (
+                <Button 
+                  type="button" 
+                  onClick={handleNext} 
+                  className="h-11 px-7 rounded-xl font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all gap-2"
+                  data-testid="button-next"
+                >
+                  Next Step
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="h-11 px-8 rounded-xl font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/25 hover:shadow-lg transition-all gap-2"
+                  data-testid="button-submit-application"
+                >
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      Submit Application
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
+      </main>
 
       {/* Success Modal */}
       {submissionResult && (
