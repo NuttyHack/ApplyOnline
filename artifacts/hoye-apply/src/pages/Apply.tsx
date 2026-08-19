@@ -170,7 +170,12 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     onExtractConsumed?.();
   }, [extractedData]);
 
-  const handleNext = async () => {
+  const handleNext = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     let fieldsToValidate: (keyof ApplicationInput)[] = [];
     
     if (currentStep === 1) {
@@ -189,7 +194,7 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     
     if (isValid) {
       if (currentStep < 5) {
-        setCurrentStep(currentStep + 1);
+        setCurrentStep((prev) => prev + 1);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
@@ -203,7 +208,7 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep((prev) => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -212,26 +217,34 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === 'Enter' && currentStep < 5 && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
       e.preventDefault();
+      e.stopPropagation();
       handleNext();
     }
   };
 
-  // Guard 2: Enforce that form submission ONLY executes on Step 5
+  // Guard 2: Strict execution gatekeeper on form submit
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     if (currentStep < 5) {
       handleNext();
       return;
     }
+    
     form.handleSubmit(onSubmit)(e);
   };
 
   const onSubmit = async (data: ApplicationInput) => {
+    // Guard 3: Hard block on submission unless user is explicitly on Step 5
+    if (currentStep !== 5) {
+      return;
+    }
+
     try {
       const formData = new FormData();
       const allFields = { ...form.getValues(), ...data };
 
-      // Append values to FormData payload
       Object.entries(allFields).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {
           if (value instanceof FileList && value.length > 0) {
@@ -244,7 +257,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         }
       });
 
-      // Label & Value formatting helpers
       const formatLabel = (key: string) =>
         key
           .replace(/_/g, ' ')
@@ -262,13 +274,12 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         return String(val);
       };
 
-      // --- MODERN EXECUTIVE GENERATED PDF FOR ADMIN ---
+      // Modern PDF Generation
       const doc = new jsPDF();
-      const primaryColor: [number, number, number] = [30, 58, 138];    // Executive Deep Navy
-      const secondaryColor: [number, number, number] = [71, 85, 105];  // Slate Blue
-      const lightBg: [number, number, number] = [248, 250, 252];       // Off-White
+      const primaryColor: [number, number, number] = [30, 58, 138];
+      const secondaryColor: [number, number, number] = [71, 85, 105];
+      const lightBg: [number, number, number] = [248, 250, 252];
 
-      // 1. Header Banner
       doc.setFillColor(...primaryColor);
       doc.rect(0, 0, 210, 28, 'F');
 
@@ -282,13 +293,11 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       doc.setTextColor(226, 232, 240);
       doc.text('OFFICIAL ADMISSION APPLICATION RECORD', 14, 22);
 
-      // Metadata Timestamp
       const today = new Date().toLocaleDateString('en-ZA');
       doc.setFontSize(8);
       doc.text(`Submitted: ${today}`, 196, 15, { align: 'right' });
       doc.text('Status: Pending Review', 196, 22, { align: 'right' });
 
-      // 2. Applicant Overview Summary Card
       doc.setFillColor(...lightBg);
       doc.setDrawColor(226, 232, 240);
       doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
@@ -306,7 +315,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
       doc.text(`Grade Applying: ${allFields.gradeApplying || 'N/A'}`, 110, 41);
       doc.text(`Start Year: ${allFields.preferredStartYear || '2027'}`, 110, 49);
 
-      // 3. Categorized Sections
       const sections = [
         {
           title: '1. Learner Personal Details',
@@ -437,7 +445,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-background via-muted/20 to-muted/40">
-      {/* Glassmorphic Header */}
       <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="container max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -458,7 +465,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         </div>
       </header>
 
-      {/* SKAVS autofill notice */}
       <AnimatePresence>
         {showSkavsNotice && (
           <motion.div
@@ -484,14 +490,11 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         )}
       </AnimatePresence>
 
-      {/* Main Content Container */}
       <main className="container max-w-4xl mx-auto px-4 py-8 space-y-8">
-        {/* Step Indicator Card */}
         <div className="bg-card/70 backdrop-blur-md border border-border/50 rounded-2xl p-6 shadow-sm">
           <StepIndicator steps={steps} currentStep={currentStep} />
         </div>
 
-        {/* Floating Modern Form Container */}
         <div className="bg-card border border-border/60 rounded-3xl p-6 sm:p-10 shadow-xl shadow-black/5">
           <form onSubmit={handleFormSubmit} onKeyDown={handleKeyDown}>
             <AnimatePresence mode="wait">
@@ -510,7 +513,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
               </motion.div>
             </AnimatePresence>
 
-            {/* Modern Action Bar */}
             <div className="flex items-center justify-between mt-10 pt-6 border-t border-border/50 gap-4">
               <Button
                 type="button"
@@ -563,7 +565,6 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
         </div>
       </main>
 
-      {/* Success Modal */}
       {submissionResult && (
         <SuccessModal
           open={showSuccess}
