@@ -297,6 +297,12 @@ const onSubmit = async (data: ApplicationInput) => {
     alert("Unable to reach the server: " + (error.message || "Please try again."));
   }
 };
+  
+  catch (error: any) {
+    console.error("Submission error:", error);
+    alert("Unable to reach the server: " + (error.message || "Please try again."));
+  }
+};
 
     const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
       method: "POST",
