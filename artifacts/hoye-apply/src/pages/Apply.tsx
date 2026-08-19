@@ -214,95 +214,106 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     }
   };
 
-const onSubmit = async (data: ApplicationInput) => {
-  try {
-    const formData = new FormData();
+  const onSubmit = async (data: ApplicationInput) => {
+    try {
+      const formData = new FormData();
 
-    // 1. Append all form values
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        if (value instanceof FileList && value.length > 0) {
-          formData.append(key, value[0]);
-        } else if (value instanceof File) {
-          formData.append(key, value);
-        } else {
-          formData.append(key, String(value));
+      // Combine form submit data with full form state to prevent omitted fields
+      const allFields = { ...form.getValues(), ...data };
+
+      // Append values to FormData payload
+      Object.entries(allFields).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          if (value instanceof FileList && value.length > 0) {
+            formData.append(key, value[0]);
+          } else if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
         }
-      }
-    });
-
-    // 2. Build PDF in memory directly from React state
-    const doc = new jsPDF();
-
-    doc.setFontSize(16);
-    doc.setTextColor(30, 64, 175);
-    doc.text("HOYE SECONDARY SCHOOL", 105, 15, { align: "center" });
-
-    doc.setFontSize(10);
-    doc.setTextColor(37, 99, 235);
-    doc.text("OFFICIAL ADMISSION APPLICATION RECORD", 105, 21, { align: "center" });
-
-    const formatLabel = (key: string) =>
-      key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
-
-    const tableRows: [string, string][] = [];
-    Object.entries(data).forEach(([key, val]) => {
-      if (
-        val !== undefined &&
-        val !== null &&
-        val !== '' &&
-        !(val instanceof File) &&
-        !(val instanceof FileList)
-      ) {
-        tableRows.push([formatLabel(key), String(val)]);
-      }
-    });
-
-    autoTable(doc, {
-      startY: 26,
-      head: [['Field', 'Application Details']],
-      body: tableRows,
-      theme: 'striped',
-      headStyles: { fillColor: [30, 64, 175], textColor: [255, 255, 255], fontStyle: 'bold' },
-      styles: { fontSize: 8, cellPadding: 2.5 },
-      columnStyles: {
-        0: { fontStyle: 'bold', cellWidth: 65, textColor: [71, 85, 105] },
-        1: { cellWidth: 'auto', textColor: [15, 23, 42] },
-      },
-    });
-
-    // Convert document to Blob and attach
-    const pdfBlob = doc.output('blob');
-    formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
-
-    // 3. Send payload to your server
-    const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server status: ${response.status}`);
-    }
-
-    const result = await response.json();
-
-    if (result.status === 'success' || result.tracking_number || result.refNumber) {
-      const generatedRef =
-        result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
-      setSubmissionResult({
-        refNumber: generatedRef,
-        message: result.message || 'Your application has been received successfully.',
       });
-      setShowSuccess(true);
-    } else {
-      alert('Submission failed: ' + (result.message || 'Please check your details.'));
+
+      // Label formatter
+      const formatLabel = (key: string) =>
+        key
+          .replace(/_/g, ' ')
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .replace(/^./, (str) => str.toUpperCase())
+          .trim();
+
+      // Value cleaner: explicitly cleans NaN and handles files
+      const cleanValue = (val: any): string => {
+        if (val === null || val === undefined) return '';
+        if (typeof val === 'number' && Number.isNaN(val)) return '';
+        if (String(val) === 'NaN' || String(val).toLowerCase() === 'undefined') return '';
+        if (val instanceof File) return `[Attached File: ${val.name}]`;
+        if (val instanceof FileList && val.length > 0) return `[Attached File: ${val[0].name}]`;
+        if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+        return String(val);
+      };
+
+      // Construct table rows for ALL applicant fields
+      const tableRows: [string, string][] = Object.entries(allFields).map(([key, val]) => [
+        formatLabel(key),
+        cleanValue(val),
+      ]);
+
+      // Generate full direct PDF document
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.setTextColor(30, 64, 175);
+      doc.text("HOYE SECONDARY SCHOOL", 105, 15, { align: "center" });
+
+      doc.setFontSize(10);
+      doc.setTextColor(37, 99, 235);
+      doc.text("OFFICIAL ADMISSION APPLICATION RECORD", 105, 21, { align: "center" });
+
+      autoTable(doc, {
+        startY: 26,
+        head: [['Application Field', 'Applicant Details']],
+        body: tableRows,
+        theme: 'striped',
+        headStyles: { fillColor: [30, 64, 175], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 65, textColor: [71, 85, 105] },
+          1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+        },
+      });
+
+      const pdfBlob = doc.output('blob');
+      formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
+
+      // Submit payload to endpoint
+      const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.status === 'success' || result.tracking_number || result.refNumber) {
+        const generatedRef =
+          result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
+        setSubmissionResult({
+          refNumber: generatedRef,
+          message: result.message || 'Your application has been received successfully.',
+        });
+        setShowSuccess(true);
+      } else {
+        alert('Submission failed: ' + (result.message || 'Please check your details.'));
+      }
+    } catch (error: any) {
+      console.error('Submission error:', error);
+      alert('Unable to reach the server: ' + (error.message || 'Please try again.'));
     }
-  } catch (error: any) {
-    console.error('Submission error:', error);
-    alert('Unable to reach the server: ' + (error.message || 'Please try again.'));
-  }
-};
+  };
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
