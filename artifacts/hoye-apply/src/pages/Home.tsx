@@ -6,41 +6,41 @@ import {
   Search, 
   CheckCircle, 
   Clock, 
-  User, 
   BookOpen, 
   ArrowRight, 
   ShieldCheck, 
-  Sparkles 
+  Sparkles,
+  GraduationCap
 } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted">
+    <div className="min-h-[100dvh] bg-slate-50/50 text-slate-950 selection:bg-sky-200 selection:text-sky-900 font-sans">
       
-      {/* Modern Header with School Logo */}
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md shadow-xs transition-all">
-        <div className="container max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      {/* Glassmorphism Header */}
+      <header className="sticky top-0 z-50 border-b border-sky-100/80 bg-white/80 backdrop-blur-xl shadow-xs transition-all">
+        <div className="container max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
           
           <Link href="/" className="flex items-center gap-3.5 group cursor-pointer">
-            <div className="w-11 h-11 rounded-2xl bg-muted/60 border border-border/60 p-1.5 flex items-center justify-center shadow-xs group-hover:border-primary/50 transition-colors">
+            <div className="w-11 h-11 rounded-2xl bg-sky-50 border border-sky-200/60 p-1.5 flex items-center justify-center shadow-xs group-hover:border-sky-400 group-hover:bg-sky-100/60 transition-all duration-300">
               <img 
                 src="/logo.png" 
                 alt="Hoye Secondary School Logo" 
                 className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" 
                 onError={(e) => {
-                  // Graceful fallback if logo image hasn't been uploaded yet
                   (e.target as HTMLElement).style.display = 'none';
-                  (e.target as HTMLElement).parentElement!.innerText = 'H';
+                  const parent = (e.target as HTMLElement).parentElement;
+                  if (parent) parent.innerText = 'H';
                 }}
               />
             </div>
             <div>
-              <h1 className="text-base font-extrabold tracking-tight text-foreground group-hover:text-primary transition-colors" data-testid="text-school-name">
+              <h1 className="text-base font-extrabold tracking-tight text-black group-hover:text-sky-600 transition-colors" data-testid="text-school-name">
                 Hoye Secondary School
               </h1>
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <p className="text-[11px] font-medium text-muted-foreground">Online Admissions Portal</p>
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Online Admissions Portal</p>
               </div>
             </div>
           </Link>
@@ -50,9 +50,9 @@ export default function Home() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="rounded-xl h-9 px-3.5 text-xs font-semibold gap-2 hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                className="rounded-xl h-9 px-3.5 text-xs font-bold gap-2 text-slate-700 hover:text-black hover:bg-sky-100/50 transition-all"
               >
-                <BookOpen className="h-4 w-4 text-primary" />
+                <BookOpen className="h-4 w-4 text-sky-500" />
                 <span>Yearbook</span>
               </Button>
             </Link>
@@ -61,7 +61,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="rounded-xl h-9 px-4 text-xs font-semibold gap-2 border-border/80 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-xs" 
+                className="rounded-xl h-9 px-4 text-xs font-bold gap-2 border-sky-200 bg-white text-black hover:bg-sky-500 hover:text-white hover:border-sky-500 transition-all shadow-xs" 
                 data-testid="button-track-header"
               >
                 <Search className="h-3.5 w-3.5" />
@@ -73,32 +73,24 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Modern Hero Section */}
-      <section className="relative overflow-hidden py-16 md:py-24 bg-gradient-to-b from-background via-muted/30 to-background">
-        {/* Ambient background glow effect */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />
+      {/* Hero Section - Light Blue & Black Modern Theme */}
+      <section className="relative overflow-hidden py-20 md:py-28 bg-gradient-to-b from-sky-100/40 via-sky-50/20 to-slate-50/50">
+        {/* Ambient Light Blue Glow Effects */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-sky-300/30 blur-[130px] rounded-full pointer-events-none -z-10" />
+        <div className="absolute top-10 right-10 w-72 h-72 bg-sky-200/20 blur-[100px] rounded-full pointer-events-none -z-10" />
 
         <div className="container max-w-4xl mx-auto px-4 text-center relative z-10">
-          
-          {/* Live Status Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-medium mb-6 backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-            </span>
-            Official Admissions Portal • 2027 Academic Year Open
-          </div>
 
-          {/* Action-Focused Title */}
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground mb-6 leading-[1.15]" data-testid="text-hero-title">
+          {/* Title */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-black mb-6 leading-[1.12]" data-testid="text-hero-title">
             Online Admission Application for <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-sky-600 via-sky-500 to-blue-600 bg-clip-text text-transparent">
               Hoye Secondary School
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-slate-700 font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
             Submit learner details, upload required documents, and track your application status in real time—all through our secure digital portal.
           </p>
 
@@ -107,11 +99,11 @@ export default function Home() {
             <Link href="/apply" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="group relative w-full sm:w-auto h-12 px-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-blue-600/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="group relative w-full sm:w-auto h-13 px-8 rounded-2xl bg-black hover:bg-slate-800 text-white font-bold shadow-lg shadow-sky-500/15 hover:shadow-sky-500/25 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                 data-testid="button-apply-online"
               >
-                <span className="flex items-center justify-center gap-2">
-                  <FileText className="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-0.5" />
+                <span className="flex items-center justify-center gap-2 text-sm sm:text-base">
+                  <FileText className="h-5 w-5 text-sky-400 transition-transform duration-200 group-hover:-translate-y-0.5" />
                   <span>Start New Application</span>
                   <ArrowRight className="h-4 w-4 ml-1 opacity-80 transition-transform duration-200 group-hover:translate-x-1" />
                 </span>
@@ -122,27 +114,27 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="w-full sm:w-auto h-12 px-8 rounded-xl border-border/80 hover:border-slate-400 bg-background/80 hover:bg-accent/60 backdrop-blur-sm font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full sm:w-auto h-13 px-8 rounded-2xl border-sky-200/80 bg-white/80 hover:bg-sky-50 hover:border-sky-300 text-black font-bold backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                 data-testid="button-track-application"
               >
-                <Search className="h-5 w-5 mr-2 text-muted-foreground" />
-                <span>Track Existing Application</span>
+                <Search className="h-5 w-5 mr-2 text-sky-600" />
+                <span className="text-sm sm:text-base">Track Application</span>
               </Button>
             </Link>
           </div>
 
           {/* Feature Highlights */}
-          <div className="mt-14 pt-8 border-t border-border/50 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs sm:text-sm text-muted-foreground">
-            <div className="flex items-center justify-center gap-2">
-              <Clock className="w-4 h-4 text-blue-600" />
+          <div className="mt-16 pt-8 border-t border-sky-200/60 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-xs sm:text-sm font-semibold text-slate-700">
+            <div className="flex items-center justify-center gap-2.5 p-2 rounded-xl bg-white/50 border border-sky-100/60 shadow-xs">
+              <Clock className="w-4 h-4 text-sky-600" />
               <span>Takes less than 10 minutes</span>
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <div className="flex items-center justify-center gap-2.5 p-2 rounded-xl bg-white/50 border border-sky-100/60 shadow-xs">
+              <ShieldCheck className="w-4 h-4 text-sky-600" />
               <span>Encrypted & POPIA Compliant</span>
             </div>
-            <div className="flex items-center justify-center gap-2">
-              <Sparkles className="w-4 h-4 text-violet-600" />
+            <div className="flex items-center justify-center gap-2.5 p-2 rounded-xl bg-white/50 border border-sky-100/60 shadow-xs">
+              <Sparkles className="w-4 h-4 text-sky-600" />
               <span>Instant Email & SMS Reference</span>
             </div>
           </div>
@@ -151,73 +143,82 @@ export default function Home() {
       </section>
 
       {/* Application Steps */}
-      <section className="container max-w-5xl mx-auto px-4 py-12">
-        <div className="text-center mb-10">
-          <h3 className="text-2xl font-bold text-foreground mb-2">How to Apply</h3>
-          <p className="text-muted-foreground">Complete your application in 5 simple steps</p>
+      <section className="container max-w-6xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <span className="text-xs font-bold uppercase tracking-wider text-sky-600 bg-sky-100/80 px-3.5 py-1.5 rounded-full border border-sky-200">
+            Simple Process
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-black mt-3 mb-3">How to Apply</h2>
+          <p className="text-slate-600 font-medium max-w-lg mx-auto">Complete your application seamlessly in 5 straightforward steps</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {[
-            { number: 1, title: 'Learner Information', description: 'Personal details and contact information' },
-            { number: 2, title: 'Academic Details', description: 'School history and performance' },
-            { number: 3, title: 'Medical & Support', description: 'Health information and needs' },
-            { number: 4, title: 'Parent/Guardian', description: 'Guardian details and employment' },
-            { number: 5, title: 'Submit & Declaration', description: 'Upload documents and submit' },
+            { number: '01', title: 'Learner Info', description: 'Personal details & contact information' },
+            { number: '02', title: 'Academic Details', description: 'School history & academic performance' },
+            { number: '03', title: 'Medical & Support', description: 'Health requirements & special needs' },
+            { number: '04', title: 'Parent/Guardian', description: 'Guardian details & emergency contact' },
+            { number: '05', title: 'Submit & Verify', description: 'Upload documents & final declaration' },
           ].map((step) => (
-            <Card key={step.number} className="relative overflow-hidden" data-testid={`card-step-${step.number}`}>
+            <Card 
+              key={step.number} 
+              className="group relative overflow-hidden border-sky-100 bg-white hover:border-sky-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-500/10" 
+              data-testid={`card-step-${step.number}`}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <span className="text-xl font-bold text-primary">{step.number}</span>
+                <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 text-sky-600 flex items-center justify-center font-extrabold text-sm mb-4 group-hover:bg-sky-500 group-hover:text-white group-hover:border-sky-500 transition-colors duration-300">
+                  {step.number}
                 </div>
-                <h4 className="font-semibold text-foreground mb-2">{step.title}</h4>
-                <p className="text-sm text-muted-foreground">{step.description}</p>
+                <h3 className="font-bold text-black text-base mb-1.5 group-hover:text-sky-600 transition-colors">{step.title}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{step.description}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Key Information */}
-      <section className="container max-w-5xl mx-auto px-4 py-12">
-        <Card className="border-2">
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-3">
-                  <Clock className="h-7 w-7 text-accent" />
-                </div>
-                <h4 className="font-semibold text-foreground mb-2">Intake Year</h4>
-                <p className="text-muted-foreground">2027 Academic Year</p>
+      {/* Key Information Highlight Cards */}
+      <section className="container max-w-5xl mx-auto px-4 py-8 mb-12">
+        <div className="rounded-3xl border border-sky-200/80 bg-gradient-to-br from-white via-sky-50/30 to-white p-8 sm:p-10 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div className="flex flex-col items-center text-center p-4 rounded-2xl bg-white/80 border border-sky-100 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-200 flex items-center justify-center mb-3">
+                <Clock className="h-6 w-6 text-sky-600" />
               </div>
-              
-              <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-3">
-                  <User className="h-7 w-7 text-accent" />
-                </div>
-                <h4 className="font-semibold text-foreground mb-2">Grade Range</h4>
-                <p className="text-muted-foreground">Grades 8 to 12</p>
-              </div>
-              
-              <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-3">
-                  <CheckCircle className="h-7 w-7 text-accent" />
-                </div>
-                <h4 className="font-semibold text-foreground mb-2">Application Status</h4>
-                <p className="text-muted-foreground">Track online anytime</p>
-              </div>
+              <h4 className="font-extrabold text-black mb-1">Intake Year</h4>
+              <p className="text-sm font-semibold text-sky-700 bg-sky-100/60 px-3 py-0.5 rounded-full">2027 Academic Year</p>
             </div>
-          </CardContent>
-        </Card>
+            
+            <div className="flex flex-col items-center text-center p-4 rounded-2xl bg-white/80 border border-sky-100 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-200 flex items-center justify-center mb-3">
+                <GraduationCap className="h-6 w-6 text-sky-600" />
+              </div>
+              <h4 className="font-extrabold text-black mb-1">Grade Range</h4>
+              <p className="text-sm font-semibold text-slate-700">Grades 8 to 12</p>
+            </div>
+            
+            <div className="flex flex-col items-center text-center p-4 rounded-2xl bg-white/80 border border-sky-100 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-200 flex items-center justify-center mb-3">
+                <CheckCircle className="h-6 w-6 text-sky-600" />
+              </div>
+              <h4 className="font-extrabold text-black mb-1">Application Status</h4>
+              <p className="text-sm font-semibold text-slate-700">Track online 24/7</p>
+            </div>
+
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t mt-16 py-8 bg-card">
-        <div className="container max-w-6xl mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2026 Hoye Secondary School. All rights reserved.</p>
-          <p className="mt-2">For assistance, please contact our admissions office.</p>
+      {/* Modern Footer */}
+      <footer className="border-t border-sky-100 py-10 bg-white">
+        <div className="container max-w-6xl mx-auto px-4 text-center text-xs sm:text-sm text-slate-600 font-medium">
+          <p className="text-black font-semibold">&copy; 2026 Hoye Secondary School. All rights reserved.</p>
+          <p className="mt-1.5 text-slate-500">For assistance or technical support, please contact our admissions office.</p>
         </div>
       </footer>
+
     </div>
   );
 }
