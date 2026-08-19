@@ -216,6 +216,7 @@ const onSubmit = async (data: ApplicationInput) => {
   try {
     const formData = new FormData();
 
+    // 1. Append all form values (Steps 1 to 5) to FormData
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         if (value instanceof FileList && value.length > 0) {
@@ -227,6 +228,75 @@ const onSubmit = async (data: ApplicationInput) => {
         }
       }
     });
+
+    // 2. Generate client-side PDF snapshot if html2pdf is available
+    if (typeof window !== 'undefined' && (window as any).html2pdf) {
+      const element = document.createElement('div');
+      element.style.padding = '20px';
+      element.style.fontFamily = 'Arial, sans-serif';
+
+      let htmlContent = `
+        <div style="text-align: center; border-bottom: 2px solid #1e40af; padding-bottom: 10px; margin-bottom: 20px;">
+          <h1 style="color: #1e40af; margin: 0;">HOYE SECONDARY SCHOOL</h1>
+          <p style="margin: 5px 0; font-weight: bold; color: #2563eb;">OFFICIAL ADMISSION APPLICATION RECORD</p>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+      `;
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value && typeof value !== 'object') {
+          const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+          htmlContent += `
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 6px; font-weight: bold; width: 40%; color: #475569;">${label}</td>
+              <td style="padding: 6px; color: #0f172a;">${String(value)}</td>
+            </tr>
+          `;
+        }
+      });
+
+      htmlContent += `</table>`;
+      element.innerHTML = htmlContent;
+
+      const opt = {
+        margin: 10,
+        filename: 'Application.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      const pdfBlob = await (window as any).html2pdf().set(opt).from(element).output('blob');
+      formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
+    }
+
+    // 3. Dispatch to live PHP backend pipeline
+    const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned status code ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.status === "success" || result.tracking_number || result.refNumber) {
+      const generatedRef = result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
+      setSubmissionResult({
+        refNumber: generatedRef,
+        message: result.message || "Your application has been received successfully."
+      });
+      setShowSuccess(true);
+    } else {
+      alert("Submission failed: " + (result.message || "Please check your details."));
+    }
+  } catch (error: any) {
+    console.error("Submission error:", error);
+    alert("Unable to reach the server: " + (error.message || "Please try again."));
+  }
+};
 
     const response = await fetch("https://hoyesecondarysch.com/app/submit_application.php", {
       method: "POST",
