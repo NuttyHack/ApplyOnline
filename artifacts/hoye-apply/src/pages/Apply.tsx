@@ -35,6 +35,7 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
   const [showSuccess, setShowSuccess] = useState(false);
   const [showSkavsNotice, setShowSkavsNotice] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<{ refNumber: string; message: string } | null>(null);
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
   const form = useForm<ApplicationInput>({
     shouldUnregister: false,
@@ -234,272 +235,272 @@ export default function Apply({ extractedData, initialStep, onExtractConsumed }:
     form.handleSubmit(onSubmit)(e);
   };
 
-const onSubmit = async (data: ApplicationInput) => {
-  if (currentStep !== 5) return;
+  const onSubmit = async (data: ApplicationInput) => {
+    if (currentStep !== 5) return;
 
-  try {
-    const formData = new FormData();
-    const allFields: Record<string, any> = { ...form.getValues(), ...data };
+    try {
+      const formData = new FormData();
+      const allFields: Record<string, any> = { ...form.getValues(), ...data };
 
-    // Key lookup that ignores casing, spaces, and special characters
-    const getFieldValue = (targetKey: string, fieldsObj: Record<string, any>) => {
-      if (fieldsObj[targetKey] !== undefined && fieldsObj[targetKey] !== null && fieldsObj[targetKey] !== '') {
-        return fieldsObj[targetKey];
-      }
-      const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-      for (const [actualKey, value] of Object.entries(fieldsObj)) {
-        const normActual = actualKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (normTarget === normActual && value !== undefined && value !== null && value !== '') {
-          return value;
+      // Key lookup that ignores casing, spaces, and special characters
+      const getFieldValue = (targetKey: string, fieldsObj: Record<string, any>) => {
+        if (fieldsObj[targetKey] !== undefined && fieldsObj[targetKey] !== null && fieldsObj[targetKey] !== '') {
+          return fieldsObj[targetKey];
         }
-      }
-      return null;
-    };
-
-    // Helper to prevent processed fields from leaking into Section 6
-    const markKeyAsProcessed = (targetKey: string, fieldsObj: Record<string, any>, processedSet: Set<string>) => {
-      const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-      for (const actualKey of Object.keys(fieldsObj)) {
-        if (actualKey.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget) {
-          processedSet.add(actualKey);
+        const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+        for (const [actualKey, value] of Object.entries(fieldsObj)) {
+          const normActual = actualKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (normTarget === normActual && value !== undefined && value !== null && value !== '') {
+            return value;
+          }
         }
-      }
-    };
+        return null;
+      };
 
-    Object.entries(allFields).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        if (value instanceof FileList && value.length > 0) {
-          formData.append(key, value[0]);
-        } else if (value instanceof File) {
-          formData.append(key, value);
-        } else {
-          formData.append(key, String(value));
+      // Helper to prevent processed fields from leaking into Section 6
+      const markKeyAsProcessed = (targetKey: string, fieldsObj: Record<string, any>, processedSet: Set<string>) => {
+        const normTarget = targetKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+        for (const actualKey of Object.keys(fieldsObj)) {
+          if (actualKey.toLowerCase().replace(/[^a-z0-9]/g, '') === normTarget) {
+            processedSet.add(actualKey);
+          }
         }
-      }
-    });
+      };
 
-    const formatLabel = (key: string) =>
-      key
-        .replace(/_/g, ' ')
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/^./, (str) => str.toUpperCase())
-        .trim();
-
-    const cleanValue = (val: any): string => {
-      if (val === null || val === undefined) return '';
-      if (typeof val === 'number' && Number.isNaN(val)) return '';
-      if (String(val) === 'NaN' || String(val).toLowerCase() === 'undefined') return '';
-      if (val instanceof File) return `[Attached File: ${val.name}]`;
-      if (val instanceof FileList && val.length > 0) return `[Attached File: ${val[0].name}]`;
-      if (typeof val === 'boolean') return val ? 'Yes' : 'No';
-      return String(val).trim();
-    };
-
-    const doc = new jsPDF();
-    const primaryColor: [number, number, number] = [30, 58, 138];
-    const secondaryColor: [number, number, number] = [71, 85, 105];
-    const lightBg: [number, number, number] = [248, 250, 252];
-
-    doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, 210, 28, 'F');
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(15);
-    doc.setTextColor(255, 255, 255);
-    doc.text('HOYE SECONDARY SCHOOL', 14, 15);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(226, 232, 240);
-    doc.text('OFFICIAL ADMISSION APPLICATION RECORD', 14, 22);
-
-    const today = new Date().toLocaleDateString('en-ZA');
-    doc.setFontSize(8);
-    doc.text(`Submitted: ${today}`, 196, 15, { align: 'right' });
-    doc.text('Status: Pending Review', 196, 22, { align: 'right' });
-
-    doc.setFillColor(...lightBg);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
-
-    // Header field mapping with fallbacks
-    const firstName = cleanValue(getFieldValue('firstName', allFields));
-    const lastName = cleanValue(getFieldValue('lastName', allFields));
-    const fullName = `${firstName} ${lastName}`.trim() || cleanValue(getFieldValue('applicantName', allFields)) || 'N/A';
-    const idNumber = cleanValue(getFieldValue('idNumber', allFields) || getFieldValue('passportNumber', allFields)) || 'N/A';
-    const gradeApplying = cleanValue(getFieldValue('gradeApplying', allFields) || getFieldValue('grade', allFields)) || 'N/A';
-    const startYear = cleanValue(getFieldValue('preferredStartYear', allFields) || getFieldValue('startYear', allFields)) || '2027';
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.setTextColor(...primaryColor);
-    doc.text(`Applicant Name: ${fullName}`, 18, 41);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.setTextColor(...secondaryColor);
-    doc.text(`ID / Passport: ${idNumber}`, 18, 49);
-    doc.text(`Grade Applying: ${gradeApplying}`, 110, 41);
-    doc.text(`Start Year: ${startYear}`, 110, 49);
-
-    const sections = [
-      {
-        title: '1. Learner Personal Details',
-        keys: [
-          'firstName', 'middleName', 'lastName', 'preferredName', 'idNumber',
-          'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
-          'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
-          'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
-          'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
-          'familyPosition', 'siblingsAtSchool'
-        ]
-      },
-      {
-        title: '2. Academic History & Preferences',
-        keys: [
-          'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
-          'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
-          'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
-          'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
-          'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
-          'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
-          'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
-          'teacherSurname', 'teacherPhone', 'teacherRelationship'
-        ]
-      },
-      {
-        title: '3. Medical & Support Information',
-        keys: [
-          'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
-          'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
-          'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
-          'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
-          'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
-          'allowEmergencyTreatment'
-        ]
-      },
-      {
-        title: '4. Parent / Guardian Details',
-        keys: [
-          'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
-          'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
-          'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
-          'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
-          'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
-          'guardian2Phone', 'permissionPhotos'
-        ]
-      },
-      {
-        title: '5. Declaration & Signature',
-        keys: [
-          'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
-          'additionalNotes'
-        ]
-      }
-    ];
-
-    let currentY = 60;
-    const processedKeys = new Set<string>();
-
-    // Render defined sections using fuzzy key matching
-    sections.forEach((sec) => {
-      const rows = sec.keys.map((k) => {
-        markKeyAsProcessed(k, allFields, processedKeys);
-        const rawVal = getFieldValue(k, allFields);
-        const val = cleanValue(rawVal);
-        return [formatLabel(k), val || 'N/A'] as [string, string];
-      });
-
-      autoTable(doc, {
-        startY: currentY,
-        head: [[sec.title, 'Details']],
-        body: rows,
-        theme: 'grid',
-        headStyles: {
-          fillColor: primaryColor,
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          fontSize: 9,
-        },
-        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
-        columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
-          1: { cellWidth: 'auto', textColor: [15, 23, 42] },
-        },
-        margin: { left: 14, right: 14 },
-        didDrawPage: () => {
-          const pageStr = `Page ${doc.getNumberOfPages()}`;
-          doc.setFontSize(7.5);
-          doc.setTextColor(148, 163, 184);
-          doc.text(pageStr, 196, 287, { align: 'right' });
-          doc.text('Hoye Secondary School — Official Confidential Admission Record', 14, 287);
+      Object.entries(allFields).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          if (value instanceof FileList && value.length > 0) {
+            formData.append(key, value[0]);
+          } else if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
         }
       });
 
-      currentY = (doc as any).lastAutoTable.finalY + 8;
-    });
+      const formatLabel = (key: string) =>
+        key
+          .replace(/_/g, ' ')
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .replace(/^./, (str) => str.toUpperCase())
+          .trim();
 
-    // Catch-all section for extra fields not defined in standard sections
-    const remainingKeys = Object.keys(allFields).filter(
-      (k) => !processedKeys.has(k) && k !== 'pdf_form_path'
-    );
+      const cleanValue = (val: any): string => {
+        if (val === null || val === undefined) return '';
+        if (typeof val === 'number' && Number.isNaN(val)) return '';
+        if (String(val) === 'NaN' || String(val).toLowerCase() === 'undefined') return '';
+        if (val instanceof File) return `[Attached File: ${val.name}]`;
+        if (val instanceof FileList && val.length > 0) return `[Attached File: ${val[0].name}]`;
+        if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+        return String(val).trim();
+      };
 
-    if (remainingKeys.length > 0) {
-      const remainingRows = remainingKeys.map((k) => {
-        const val = cleanValue(allFields[k]);
-        return [formatLabel(k), val || 'N/A'] as [string, string];
+      const doc = new jsPDF();
+      const primaryColor: [number, number, number] = [30, 58, 138];
+      const secondaryColor: [number, number, number] = [71, 85, 105];
+      const lightBg: [number, number, number] = [248, 250, 252];
+
+      doc.setFillColor(...primaryColor);
+      doc.rect(0, 0, 210, 28, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.setTextColor(255, 255, 255);
+      doc.text('HOYE SECONDARY SCHOOL', 14, 15);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(226, 232, 240);
+      doc.text('OFFICIAL ADMISSION APPLICATION RECORD', 14, 22);
+
+      const today = new Date().toLocaleDateString('en-ZA');
+      doc.setFontSize(8);
+      doc.text(`Submitted: ${today}`, 196, 15, { align: 'right' });
+      doc.text('Status: Pending Review', 196, 22, { align: 'right' });
+
+      doc.setFillColor(...lightBg);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(14, 33, 182, 22, 3, 3, 'FD');
+
+      // Header field mapping with fallbacks
+      const firstName = cleanValue(getFieldValue('firstName', allFields));
+      const lastName = cleanValue(getFieldValue('lastName', allFields));
+      const fullName = `${firstName} ${lastName}`.trim() || cleanValue(getFieldValue('applicantName', allFields)) || 'N/A';
+      const idNumber = cleanValue(getFieldValue('idNumber', allFields) || getFieldValue('passportNumber', allFields)) || 'N/A';
+      const gradeApplying = cleanValue(getFieldValue('gradeApplying', allFields) || getFieldValue('grade', allFields)) || 'N/A';
+      const startYear = cleanValue(getFieldValue('preferredStartYear', allFields) || getFieldValue('startYear', allFields)) || '2027';
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(...primaryColor);
+      doc.text(`Applicant Name: ${fullName}`, 18, 41);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(...secondaryColor);
+      doc.text(`ID / Passport: ${idNumber}`, 18, 49);
+      doc.text(`Grade Applying: ${gradeApplying}`, 110, 41);
+      doc.text(`Start Year: ${startYear}`, 110, 49);
+
+      const sections = [
+        {
+          title: '1. Learner Personal Details',
+          keys: [
+            'firstName', 'middleName', 'lastName', 'preferredName', 'idNumber',
+            'birthCertNumber', 'dob', 'age', 'gender', 'nationality', 'citizenship',
+            'countryOfBirth', 'homeLanguage', 'secondLanguage', 'learningLanguage',
+            'religion', 'mobileNumber', 'email', 'residentialAddress', 'city',
+            'province', 'postalCode', 'country', 'livesWith', 'totalSiblings',
+            'familyPosition', 'siblingsAtSchool'
+          ]
+        },
+        {
+          title: '2. Academic History & Preferences',
+          keys: [
+            'preferredStartYear', 'gradePassed', 'yearPassedHighest', 'currentGrade',
+            'currentAcademicYear', 'prevSchoolName', 'prevSchoolAddress', 'prevSchoolPhone',
+            'reasonLeaving', 'averagePercentage', 'bestSubject', 'weakestSubject',
+            'numSubjectsPassed', 'gradeApplying', 'chosenStream', 'optionalSubject',
+            'needsSupport', 'needsExtraLessons', 'achievements', 'sportsParticipation',
+            'leadershipRoles', 'extracurricular', 'hasDisciplineHistory', 'disciplineDetails',
+            'motivationToJoin', 'referralSource', 'hasTeacherRelative', 'teacherName',
+            'teacherSurname', 'teacherPhone', 'teacherRelationship'
+          ]
+        },
+        {
+          title: '3. Medical & Support Information',
+          keys: [
+            'hasMedicalAid', 'medAidProvider', 'medAidNumber', 'hasFamilyDoctor',
+            'doctorName', 'doctorPhone', 'emergencyName', 'emergencyPhone',
+            'emergencyRelationship', 'medicalAllergies', 'medicalConditions',
+            'currentMedication', 'medAsthma', 'medEpilepsy', 'medDiabetes',
+            'hasDisability', 'disabilityDetails', 'needsCounselling', 'sportsAllowed',
+            'allowEmergencyTreatment'
+          ]
+        },
+        {
+          title: '4. Parent / Guardian Details',
+          keys: [
+            'guardianFirstName', 'guardianLastName', 'guardianId', 'guardianRelationship',
+            'guardianMaritalStatus', 'guardianPhone', 'guardianAltPhone', 'guardianWhatsapp',
+            'guardianEmail', 'guardianEmploymentStatus', 'guardianOccupation',
+            'guardianEmployer', 'guardianIncomeRange', 'guardianHomeAddress',
+            'preferredCommunication', 'hasSecondGuardian', 'guardian2Name',
+            'guardian2Phone', 'permissionPhotos'
+          ]
+        },
+        {
+          title: '5. Declaration & Signature',
+          keys: [
+            'confirmTruth', 'agreePolicies', 'digitalSignature', 'submissionDate',
+            'additionalNotes'
+          ]
+        }
+      ];
+
+      let currentY = 60;
+      const processedKeys = new Set<string>();
+
+      // Render defined sections using fuzzy key matching
+      sections.forEach((sec) => {
+        const rows = sec.keys.map((k) => {
+          markKeyAsProcessed(k, allFields, processedKeys);
+          const rawVal = getFieldValue(k, allFields);
+          const val = cleanValue(rawVal);
+          return [formatLabel(k), val || 'N/A'] as [string, string];
+        });
+
+        autoTable(doc, {
+          startY: currentY,
+          head: [[sec.title, 'Details']],
+          body: rows,
+          theme: 'grid',
+          headStyles: {
+            fillColor: primaryColor,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 9,
+          },
+          styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+          columnStyles: {
+            0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
+            1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+          },
+          margin: { left: 14, right: 14 },
+          didDrawPage: () => {
+            const pageStr = `Page ${doc.getNumberOfPages()}`;
+            doc.setFontSize(7.5);
+            doc.setTextColor(148, 163, 184);
+            doc.text(pageStr, 196, 287, { align: 'right' });
+            doc.text('Hoye Secondary School — Official Confidential Admission Record', 14, 287);
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
       });
 
-      autoTable(doc, {
-        startY: currentY,
-        head: [['6. Additional Form Details', 'Details']],
-        body: remainingRows,
-        theme: 'grid',
-        headStyles: {
-          fillColor: primaryColor,
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          fontSize: 9,
-        },
-        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
-        columnStyles: {
-          0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
-          1: { cellWidth: 'auto', textColor: [15, 23, 42] },
-        },
-        margin: { left: 14, right: 14 },
+      // Catch-all section for extra fields not defined in standard sections
+      const remainingKeys = Object.keys(allFields).filter(
+        (k) => !processedKeys.has(k) && k !== 'pdf_form_path'
+      );
+
+      if (remainingKeys.length > 0) {
+        const remainingRows = remainingKeys.map((k) => {
+          const val = cleanValue(allFields[k]);
+          return [formatLabel(k), val || 'N/A'] as [string, string];
+        });
+
+        autoTable(doc, {
+          startY: currentY,
+          head: [['6. Additional Form Details', 'Details']],
+          body: remainingRows,
+          theme: 'grid',
+          headStyles: {
+            fillColor: primaryColor,
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 9,
+          },
+          styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
+          columnStyles: {
+            0: { fontStyle: 'bold', cellWidth: 60, textColor: secondaryColor },
+            1: { cellWidth: 'auto', textColor: [15, 23, 42] },
+          },
+          margin: { left: 14, right: 14 },
+        });
+      }
+
+      const pdfBlob = doc.output('blob');
+      formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
+
+      const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
+        method: 'POST',
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error(`Server status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.status === 'success' || result.tracking_number || result.refNumber) {
+        const generatedRef =
+          result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
+        setSubmissionResult({
+          refNumber: generatedRef,
+          message: result.message || 'Your application has been received successfully.',
+        });
+        setShowSuccess(true);
+      } else {
+        setDuplicateError(result.message || 'Please check your details.');
+      }
+    } catch (error: any) {
+      console.error('Submission error:', error);
+      setDuplicateError('Unable to reach the server: ' + (error.message || 'Please try again.'));
     }
-
-    const pdfBlob = doc.output('blob');
-    formData.append('pdf_form_path', pdfBlob, 'Application.pdf');
-
-    const response = await fetch('https://hoyesecondarysch.com/app/submit_application.php', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server status: ${response.status}`);
-    }
-
-    const result = await response.json();
-
-    if (result.status === 'success' || result.tracking_number || result.refNumber) {
-      const generatedRef =
-        result.tracking_number || result.refNumber || `HY-${new Date().getFullYear()}-0000`;
-      setSubmissionResult({
-        refNumber: generatedRef,
-        message: result.message || 'Your application has been received successfully.',
-      });
-      setShowSuccess(true);
-    } else {
-      alert('Submission failed: ' + (result.message || 'Please check your details.'));
-    }
-  } catch (error: any) {
-    console.error('Submission error:', error);
-    alert('Unable to reach the server: ' + (error.message || 'Please try again.'));
-  }
-};
+  };
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-b from-background via-muted/20 to-muted/40">
@@ -631,6 +632,55 @@ const onSubmit = async (data: ApplicationInput) => {
           message={submissionResult.message}
         />
       )}
+
+      {/* Modern Duplicate Record / Submission Error Modal */}
+      <AnimatePresence>
+        {duplicateError && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="w-full max-w-md overflow-hidden rounded-3xl border border-amber-500/20 bg-card p-6 shadow-2xl text-center space-y-4"
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                <School className="h-7 w-7 text-amber-600" />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-bold tracking-tight text-foreground">
+                  Application Notice
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+                  {duplicateError}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2.5 pt-2">
+                <a
+                  href="mailto:admissions@hoyesecondarysch.com"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-xl text-sm transition-all shadow-md shadow-primary/20 hover:bg-primary/90"
+                >
+                  Contact Admissions Office
+                </a>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDuplicateError(null)}
+                  className="w-full rounded-xl py-2.5 font-semibold"
+                >
+                  Dismiss & Review Form
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
