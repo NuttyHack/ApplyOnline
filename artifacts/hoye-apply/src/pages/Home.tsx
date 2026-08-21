@@ -226,12 +226,20 @@ export default function Home() {
       </section>
 
       {/* Modern Footer */}
-      <footer className="border-t border-sky-100 py-8 sm:py-10 bg-white">
-        <div className="container max-w-6xl mx-auto px-4 text-center text-xs sm:text-sm text-slate-600 font-medium">
-          <p className="text-black font-semibold">&copy; 2026 Hoye Secondary School. All rights reserved.</p>
-          <p className="mt-1.5 text-slate-500">For assistance or technical support, please contact our admissions office.</p>
-        </div>
-      </footer>
+<footer className="border-t border-sky-100 py-8 sm:py-10 bg-white">
+  <div className="container max-w-6xl mx-auto px-4 text-center text-xs sm:text-sm text-slate-600 font-medium">
+    <p className="text-black font-semibold">&copy; 2026 Hoye Secondary School. All rights reserved.</p>
+    <p className="mt-1.5 text-slate-500">
+      For assistance or technical support, please contact our admissions office at{' '}
+      <a 
+        href="mailto:admissions@hoyesecondarysch.com" 
+        className="text-sky-600 font-semibold hover:underline transition-colors"
+      >
+        admissions@hoyesecondarysch.com
+      </a>
+    </p>
+  </div>
+</footer>
 
     </div>
   );
