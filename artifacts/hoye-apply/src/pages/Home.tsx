@@ -47,15 +47,15 @@ export default function Home() {
           </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Modern Main Website Link (Navigates in Same Tab) */}
+            {/* Added: Direct link to main website in same tab */}
             <a href="https://hoyesecondarysch.com">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="rounded-xl h-8 sm:h-9 px-2 sm:px-3.5 text-xs font-bold gap-1.5 sm:gap-2 text-slate-700 hover:text-sky-700 hover:bg-sky-100/60 border border-sky-200/60 bg-white/70 transition-all shadow-xs"
+                className="rounded-xl h-8 sm:h-9 px-2 sm:px-3.5 text-xs font-bold gap-1.5 sm:gap-2 text-slate-700 hover:text-black hover:bg-sky-100/50 transition-all"
               >
-                <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-sky-600" />
-                <span className="hidden xs:inline">Main Website</span>
+                <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-sky-500" />
+                <span className="hidden xs:inline">Main Site</span>
               </Button>
             </a>
 
