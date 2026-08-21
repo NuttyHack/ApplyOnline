@@ -175,10 +175,6 @@ export function Step2Academic({ form }: Step2Props) {
             <Input id="weakest_subject" {...register('weakest_subject')} data-testid="input-weakest_subject" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="optional_subject">Optional Subject Interest</Label>
-            <Input id="optional_subject" {...register('optional_subject')} data-testid="input-optional_subject" />
-          </div>
 
           <div className="space-y-2">
             <Label htmlFor="needs_support">Needs Academic Support?</Label>

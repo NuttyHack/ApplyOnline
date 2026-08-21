@@ -54,10 +54,6 @@ export function Step1LearnerInfo({ form }: Step1Props) {
             {errors.id_number && <p className="text-sm text-destructive">ID number is required</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="birth_cert_number">Birth Certificate Number</Label>
-            <Input id="birth_cert_number" {...register('birth_cert_number')} data-testid="input-birth_cert_number" />
-          </div>
 
           <div className="space-y-2">
             <Label htmlFor="dob">Date of Birth *</Label>
